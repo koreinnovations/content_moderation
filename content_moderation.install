@@ -14,14 +14,68 @@ function content_moderation_schema() {
   $schema['content_moderation'] = array(
     'description' => t('Saves the current live vid of a node'),
     'fields' => array(
-       'vid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'vid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'nid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
     ),
     'primary key' => array('vid'),
-    'unique keys' => array('nid' => array('nid'))    
+    'unique keys' => array('nid' => array('nid'))
   );
-  
+
+  $schema['content_moderation_revision_state'] = array(
+    'description' => t('Saves the current live vid of a node'),
+    'fields' => array(
+      'vid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'nid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'state'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+    ),
+    'primary key' => array('vid'),
+  );
+
+  $schema['content_moderation_states'] = array(
+    'description' => t('Saves the current live vid of a node'),
+    'fields' => array(
+      'sid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+    ),
+    'unique keys' => array('name' => array('name'))
+  );
+
+  $schema['content_moderation_node_history'] = array(
+    'fields' => array(
+      'hid'     => array('type' => 'serial', 'not null' => TRUE),
+      'vid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'nid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'old_sid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'sid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'uid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'stamp'   => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'comment' => array('type' => 'text', 'size' => 'big', 'not null' => FALSE)),
+    'primary key' => array('hid'),
+    'indexes' => array(
+      'nid' => array('vid', 'sid')),
+  );
+
   return $schema;
+}
+
+function content_moderation_update_6002() {
+  $states = array(
+    array(
+      'name' => 'Conecept',
+      'sid' => 1
+    ),
+    array(
+      'name' => 'Review',
+      'sid' => 2
+    ),
+    array(
+      'name' => 'Waiting for approval',
+      'sid' => 3
+    ),
+  );
+  foreach($states as $state) {
+    drupal_write_record('content_moderation_states',$state);
+  }
 }
 
 /**

@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+#content_moderation .edit_state,#content_moderation .current_state {
+  display:inline;
+}
+
+#content_moderation  .current_state {
+  margin-right:4px;
+}
+
+#content_moderation .info label {
+	font-weight:bolder;
+}
+
+#content_moderation .info .details {
+  color:grey;
+  font-size:0.8em;  
+}
+
+#content_moderation .live_info a{
+  font-weight:normal;
+  margin:0px 0px 5px 0px;
+}
+
+#content_moderation .live_info {
+  margin:0px 0px 8px 0px;
+}
+
+#content_moderation  .edit_state a, #content_moderation .info a {
+  color:#0D85D0;
+  font-weight:bolder;
+}
+
+
+.tinyicon{
+  position:relative;
+  top:4px;
+  display:inline-block;
+  height:18px;
+  width:16px;
+  padding:0px 2px 0px 2px;  
+  background-repeat:no-repeat;
+}
+
+.t_editicon {
+  background-image:url(images/icons/tiny/edit.png);
+}
+
+.t_revisionicon {
+  background-image:url(images/icons/tiny/revisions.png);
+}
+
+.t_deleteicon {
+ background-image:url(images/icons/tiny/delete.png);
+}
