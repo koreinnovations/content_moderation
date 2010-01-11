@@ -5,6 +5,7 @@
 function content_moderation_install() {
   // Create tables.
   drupal_install_schema('content_moderation');
+  _content_moderation_insert_values();
 }
 
 /**
@@ -32,9 +33,8 @@ function content_moderation_schema() {
   );
 
   $schema['content_moderation_states'] = array(
-    'description' => t('Saves the current live vid of a node'),
+    'description' => t('Defines all possible states'),
     'fields' => array(
-      'sid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
     ),
     'unique keys' => array('name' => array('name'))
@@ -45,37 +45,51 @@ function content_moderation_schema() {
       'hid'     => array('type' => 'serial', 'not null' => TRUE),
       'vid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
       'nid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
-      'old_sid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
-      'sid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
+      'old_state_name' => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'state_name'     => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
       'uid'     => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
       'stamp'   => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'disp-width' => '10'),
       'comment' => array('type' => 'text', 'size' => 'big', 'not null' => FALSE)),
     'primary key' => array('hid'),
-    'indexes' => array(
-      'nid' => array('vid', 'sid')),
+  );
+
+  $schema['content_moderation_transition'] = array(
+    'description' => t('Defines the valid transitions for states'),
+    'fields' => array(
+      'from_name'          => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'to_name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'ntype'      => array('type' => 'varchar', 'length' => '40', 'not null' => FALSE),
+    ),
   );
 
   return $schema;
 }
 
-function content_moderation_update_6002() {
+
+function _content_moderation_insert_values() {
   $states = array(
     array(
-      'name' => 'Conecept',
-      'sid' => 1
+      'name' => 'none',
     ),
     array(
-      'name' => 'Review',
-      'sid' => 2
+      'name' => 'review',
     ),
     array(
-      'name' => 'Waiting for approval',
-      'sid' => 3
+      'name' => 'approve',
+    ),
+    array(
+      'name' => 'live',
     ),
   );
   foreach($states as $state) {
     drupal_write_record('content_moderation_states',$state);
   }
+  $trans = array('from_name' => 'none','to_name' => 'review', 'ntype' => 'all');
+  drupal_write_record('content_moderation_transition', $trans);
+  $trans = array('from_name' => 'review','to_name' => 'approve', 'ntype' => 'all');
+  drupal_write_record('content_moderation_transition',$trans);
+  $trans = array('from_name' => 'approve','to_name' => 'live', 'ntype' => 'all');
+  drupal_write_record('content_moderation_transition',$trans);
 }
 
 /**

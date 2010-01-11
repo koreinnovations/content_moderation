@@ -15,6 +15,7 @@ $rev_icon = '<span class="tinyicon t_revisionicon"></span>';
 $delete_icon = '<span class="tinyicon t_deleteicon"></span>';
 
 /* actions */
+$edit_state = l($edit_icon,$links['edit_state'],array('html' => true, 'attributes' => array( 'title' => t('Edit the state of this revision like review or approval') ) ));
 $edit_live = l($edit_icon,$links['edit_live'],array('html' => true, 'attributes' => array( 'title' => t('Edit the moderation status of this revision') ) ));
 if(module_exists('diff')){
   $compare_live = l($rev_icon,$links['compare_with_live'],array('html' => true, 'attributes' => array( 'title' => t('Compare this revision with the live revision') ) ));
@@ -23,7 +24,6 @@ if(module_exists('diff')){
 
 $edit_current = l($edit_icon,$links['edit_revision'],array('html' => true, 'attributes' => array( 'title' => t('Edit this revision') ) ));
 $delete_current = l($delete_icon,$links['delete_revision'],array('html' => true, 'attributes' => array( 'title' => t('Delete this revision') ) ));
-
 
 ?>
 <div id="content_moderation">
@@ -35,6 +35,7 @@ $delete_current = l($delete_icon,$links['delete_revision'],array('html' => true,
     <span class="details">&raquo; <?=date('d.m.y',$live->revision_timestamp)?> (<?=$user->name?>)</span>
   </div>
   <?php }?>
-
-  <div class="current_state info"><label>Status: </label><?=$state?> <?=$edit_live?></div>
+  <?php if(_content_moderation_moderate_node_type($node->type) && ($node->vid != $live->vid)) {?>
+    <div class="current_state info"><label>Status: </label><?=$state?> <?=$edit_state?></div>
+  <?php }?>
 </div>

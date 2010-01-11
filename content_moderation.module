@@ -5,19 +5,31 @@ require_once('content_moderation.workflow.inc');
  * Implementation of hook_menu().
  */
 function content_moderation_menu() {
-  //$states = _content_moderation_states();
+
   $items = array();
 
-  $items["moderate/%node/%vid/change"] = array(
+  $items["moderate/%node/%/change"] = array(
       'title' => 'Change moderation state',
       'type' => MENU_CALLBACK,
       'page callback' => 'drupal_get_form',
-      'access callback' => true,
-      'page arguments' => array('content_moderation_change_state_form',$vid),
+      'page arguments' => array('content_moderation_change_state_form',2),
+      'access callback' => '_content_moderation_statechange_allowed',
+      'access arguments' => array(2)
+  );
+
+  $items["node/%node/moderation_history"] = array(
+      'title' => 'Moderation history',
+      'description' => 'Show the content moderation history',
+      'type' => MENU_LOCAL_TASK,
+      'page callback' => '_content_moderation_history',
+      'page arguments' => array(1),
+      'access callback' => '_content_moderation_access',
+      'access arguments' => array('view history',1),
   );
 
   return $items;
 }
+
 /*
  * Implementing hook_block
  */
@@ -32,11 +44,16 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
         case 0:
           $node = menu_get_object('node');
           $live = _content_moderation_live_revision($node->nid);
+          // node need to show the block if we are not looking at a revision
+          if($node->vid == $live->vid) {
+            return "";
+          }
+
           $live_link = l($live->vid,'node/'.$live->nid);
           $state = _content_moderation_current_state($node->vid);
 
           $m = drupal_get_path('module', 'content_moderation');
-          drupal_add_css("$m/content_moderation_block.css");
+          drupal_add_css("$m/css/block.css");
 
           // All kinds of actions we can do.
           $links['edit_revision'] = "node/{$node->nid}/revisions/{$node->vid}/edit";
@@ -46,7 +63,7 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
           $links['compare_with_live'] = "node/{$node->nid}/revisions/view/{$node->vid}/{$live->vid}";
           $links['compare'] = "node/{$node->nid}/revisions";
 
-          $block['subject'] = "";
+          $block['subject'] = t("Revision");
           $block['content'] = theme('content_moderation_info_block',$node, $links, $state, $live_link, $live);
           return $block;
         break;
@@ -55,6 +72,7 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
   }
 }
 
+
 /*
  * Implementation of hook_theme
  */
@@ -62,8 +80,11 @@ function content_moderation_theme() {
   return array(
     'content_moderation_info_block' => array(
       'template' => 'content_moderation_info_block',
-    'arguments' => array('node' => NULL,'links' => NULL, 'state' => t('none'), 'live_link' => NULL, 'live' => NULL),
+      'arguments' => array('node' => NULL,'links' => NULL, 'state' => t('none'), 'live_link' => NULL, 'live' => NULL),
     ),
+    'content_moderation_node_history' => array(
+     'arguments' => array('history' => array()),
+    )
   );
 }
 
@@ -83,7 +104,7 @@ function content_moderation_help($path, $arg) {
 function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
   global $user;
   $type = $node->type;
-  if ( variable_get( "node_options_$type", array(0) ) == 0) {
+  if (!_content_moderation_moderate_node_type($type)) {
     // Dont moderate this content type
     return;
   }
@@ -92,6 +113,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       if ( empty($node->nid)) {
         // We backup the original data and use them in the insert hook later.
         $node->body_orig = $node->body;
+        $node->teaser_orig = $node->teaser;
         $node->log_orig = $node->log;
         // lets call our alter hook to modify the fake-live version
         _content_moderation_get_modfiy_for_first_revision($node);
@@ -124,16 +146,15 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       } else {
         // We dont want to reset, we want to save the current revision as the new live version.
         _content_moderation_set_node_var(array(
-          'nid'=>$node->nid,'vid'=>$node->vid
+          'nid' => $node->nid,'vid' => $node->vid
         ));
         drupal_set_message(t('Your node has been successfuly published as the new live version'));
       }
       break;
     case 'view':
-      $live_vid = db_result(db_query('SELECT vid FROM {node} WHERE nid = %d', $node->nid));
-      $moderate = user_access('moderate pending content');
-      $revert = user_access('revert revisions');
-      $delete = user_access('delete revisions');
+      $live = _content_moderation_live_revision($node->nid);
+      $live_vid = $live->vid;
+
       if ($node->vid != $live_vid) {
         // This is a pending revision.
         $pending = "";
@@ -148,16 +169,30 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       break;
   }
 }
+
 /*
  * Implementation of hook_perm.
  */
 function content_moderation_perm() {
+  // TODO: cache this
   // This user right is later used for granting the user the approval of pending version
   // making those version "live".
-  return array(
-    'moderate pending content'
-  );
+  $states = _content_moderation_states();
+  $types = _content_moderation_moderate_node_types();
+
+  $rigths = array();
+  foreach($types as $type) {
+    foreach($states as $from_state) {
+        $to_states = _content_moderation_next_states($from_state,$type);
+        foreach($to_states as $to_state) {
+          $rigths[] = "content moderation $type state $from_state to $to_state";
+        }
+    }
+  }
+
+  return $rigths;
 }
+
 /*
  * Call this method in the form_submit or presave methods to let the updated node
  * be the new live version.
@@ -181,11 +216,45 @@ function content_moderation_content_moderation_modify_first_revision_alter(&$nod
 /*
  * Implementation of hook_form_alter
  */
-
 function content_moderation_form_node_type_form_alter(&$form, $form_state) {
   $form[ 'workflow' ][ 'node_options' ][ '#options' ][ 'node_content_moderation' ] = t('Moderate revisions');
 }
 
+/*
+ * Implementation content_moderation_node_history
+ * Theming the output of content moderations history table
+ */
+function theme_content_moderation_node_history($history) {
+  $data = array();
+
+  foreach($history as $e) {
+    $user = user_load($e->uid);
+    $state_class = "state_{$e->state_name}";
+    // TODO: proper localized date format
+    $data[] = array (
+      date('d.m.y - h:i', $e->stamp),                         // date
+      l($user->name,"user/{$user->uid}"),                     // Who changed that state?
+      "<span class='$state_class'>".ucfirst(t($e->old_state_name)).' -> '.ucfirst(t($e->state_name)).'</span>',             // Transition
+      l($e->vid,"node/{$e->nid}/revisions/{$e->vid}/view")   // revision
+    );
+  }
+  return theme('table',
+                array(
+                      t('Date'),
+                      t('Author'),
+                      t('Transition'),
+                      t('Revision'),
+                    )
+                ,$data);
+}
+
+function _content_moderation_history($node) {
+  $m = drupal_get_path('module', 'content_moderation');
+  drupal_add_css("$m/css/history.css");
+  $history = _content_moderation_get_history(array('name' => 'nid', 'value' => $node->nid));
+  drupal_set_title(t('History'));
+  return theme('content_moderation_node_history',$history);
+}
 /*
  * Calling our alter hook
  */
@@ -209,6 +278,7 @@ function _content_moderation_new_node(&$node) {
   // We saved a "pending" version of the node first, lets restore the real content
   // and the real log message.
   $node->body = $node->body_orig;
+  $node->teaser = $node->teaser_orig;
   $node->log = $node->log_orig;
   $node->changed = time() + 10;
   $node->timestamp = time() + 10;
@@ -231,9 +301,7 @@ function _content_moderation_get_node_var($name, $nid, $default = NULL) {
  */
 function _content_moderation_set_node_var($values, $keys = NULL) {
   if ($keys != NULL) {
-    $nid = db_result(db_query("select nid from {content_moderation} where {$keys[0]}=%d", $values-> {
-      $keys[ 0 ]
-    } ));
+    $nid = db_result(db_query("select nid from {content_moderation} where {$keys[0]['name']}=%d", $keys[0]['value']));
     if ($nid === false) {
       $keys = NULL;
     }
@@ -248,6 +316,92 @@ function _content_moderation_live_revision($nid) {
   //TODO: this can be costy
   return node_load($nid);
 }
+
+
+/*
+ * Determine if this content type is set to be moderated
+ */
+function _content_moderation_moderate_node_type($type) {
+  // Is this content even in moderatation?
+  $var = variable_get( "node_options_$type", array(0));
+  if( array_search('node_content_moderation',$var) ) {
+    return true;
+  }
+  //else
+  return false;
+}
+
+/*
+ * Determine if this content type is set to be moderated
+ */
+function _content_moderation_moderate_node_types() {
+  $types = node_get_types('types');
+  $result= array();
+  foreach($types as $type) {
+      // Is this content even in moderatation?
+
+    if( _content_moderation_moderate_node_type($type->type)) {
+      $result[] = $type->type;
+    }
+  }
+
+  return $result;
+}
+
+/*
+ * Getting nid by vid
+ */
+function _content_moderation_get_nid($vid) {
+  $result = db_query('select nid from {node_revisions} where vid=%d',$vid);
+  $row = db_fetch_object($result);
+  return $row->nid;
+}
+
+/*
+ * Return the proper path to the change-state action
+ */
+function _content_moderation_change_state_link($vid,$nid) {
+  return "moderate/$nid/$vid/change";
+}
+
+/*
+ * Checking, if the user has the proper rights to change the state of a node, so
+ * checking the transition and node type.
+ */
+function _content_moderation_state_allowed($user,$from_state,$to_state,$node_type) {
+  return user_access("content moderation $node_type state $from_state to $to_state");
+}
+
+/*
+ * Provides a hook where modules can register there access handler.
+ * Example:
+ * function mymodul_content_moderation_access($op) {
+ *  switch($op) {
+ *    case 'view history':
+ *      return 'mymodule_access_history'
+ *    break;
+ *  }
+ * }
+ *
+ * function mymodule_access_history($node) {
+ *  return true;
+ * }
+ */
+function _content_moderation_access($op,$node) {
+  $access_methods = module_invoke_all('content_moderation_access',$op);
+  if(count($access_methods) > 0) {
+    if(function_exists($access_methods[0])) {
+      return $access_methods[0]($node);
+    }
+  }
+  //else the default
+  switch($op) {
+    case 'view history':
+      return node_acess('view',$node);
+    break;
+  }
+}
+
 /*
 function content_moderation_views_api() {
   return array('api' => 2.0);
