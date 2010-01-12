@@ -22,6 +22,24 @@ function content_moderation_views_data() {
       'handler' => 'views_handler_sort',
     ),
   );
+
+  $data['content_moderation_revision_state']['table']['group'] = t('Node Revision');
+  $data['content_moderation_revision_state']['table']['join'] = array(
+    'node_revisions' => array(
+      'left_field' => 'vid',
+      'field' => 'vid',
+      'type' => 'INNER',
+    ),
+  );
+
+  $data['content_moderation_revision_state']['state'] = array(
+    'title' => t('State'),
+    'help' => t('State of the node revisision'),
+    'filter' => array(
+      'handler' => 'content_moderation_handler_filter_state',
+    ),
+  );
+
   $data['test']['moderate_new'] = array(
     'title' => t('Moderated_new'), // The item it appears as on the UI,
     'help' => t('Whether or not the node is moderated.'), // The help that appears on the UI,
@@ -64,15 +82,17 @@ function content_moderation_views_data() {
   return $data;
 }
 
-function content__moderationviews_handlers() {
-  dsm('hi');
+function content_moderation_views_handlers() {
   return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'views') . '/modules/node',
-    ),
+    //'info' => array(
+      //'path' => drupal_get_path('module', 'views') . '/modules/node',
+    //),
     'handlers' => array(
       'views_handler_field_node' => array(
         'parent' => 'views_handler_field',
+      ),
+      'content_moderation_handler_filter_state' => array(
+        'parent' => 'views_handler_filter',
       ),
       /*'views_handler_filter_content_moderation_pending_revision' => array(
         'parent' => 'views_handler_filter'

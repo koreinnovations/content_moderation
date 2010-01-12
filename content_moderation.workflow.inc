@@ -206,7 +206,7 @@ function _content_moderation_states() {
 }
 
 /*
- * Generally check, whether the node-type can me moderated at all
+ * Generally check, whether the node-type can be moderated at all
  * and whether the user is allowed to change into that state for that
  * node type.
  */

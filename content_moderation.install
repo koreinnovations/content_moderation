@@ -65,7 +65,6 @@ function content_moderation_schema() {
   return $schema;
 }
 
-
 function _content_moderation_insert_values() {
   $states = array(
     array(
@@ -82,16 +81,17 @@ function _content_moderation_insert_values() {
     ),
   );
   foreach($states as $state) {
-    drupal_write_record('content_moderation_states',$state);
+      db_query('insert into {content_moderation_states} (`name`) VALUES("%s")',$state);
   }
-  $trans = array('from_name' => 'none','to_name' => 'review', 'ntype' => 'all');
-  drupal_write_record('content_moderation_transition', $trans);
-  $trans = array('from_name' => 'review','to_name' => 'approve', 'ntype' => 'all');
-  drupal_write_record('content_moderation_transition',$trans);
-  $trans = array('from_name' => 'approve','to_name' => 'live', 'ntype' => 'all');
-  drupal_write_record('content_moderation_transition',$trans);
+
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("none","review","all")');
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","approve","all")');
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","live","all")');
 }
 
+function content_moderation_update_6001(){
+  db_query("UPDATE {system} SET weight = 15 WHERE name = 'content_moderation'");
+}
 /**
  * Implementation of hook_uninstall().
  */

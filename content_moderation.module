@@ -5,9 +5,7 @@ require_once('content_moderation.workflow.inc');
  * Implementation of hook_menu().
  */
 function content_moderation_menu() {
-
   $items = array();
-
   $items["moderate/%node/%/change"] = array(
       'title' => 'Change moderation state',
       'type' => MENU_CALLBACK,
@@ -16,7 +14,6 @@ function content_moderation_menu() {
       'access callback' => '_content_moderation_statechange_allowed',
       'access arguments' => array(2)
   );
-
   $items["node/%node/moderation_history"] = array(
       'title' => 'Moderation history',
       'description' => 'Show the content moderation history',
@@ -123,26 +120,36 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       }
       break;
     case 'insert':
+      // We need to clone the node, otherwise later the grants will be assigned to that vid
+      $node_real = drupal_clone($node);
       // as we saved the "fake live version" before in presave, lets save the original node here.
-      _content_moderation_new_node($node);
-      drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
-        '!here'=>l(t('here'), "node/".$node->nid)
+      $node_real->content_moderation_update = true;
+      _content_moderation_new_node($node_real);
+      drupal_set_message(t("Your content has been saved as a pending revision. Click !here to view your revision.", array(
+        '!here'=>l(t('here'), "node/$node->nid/revisions/".$node->vid.'/view')
       )), 'warning');
-      drupal_goto("node/$node->nid/revisions/".$node->vid.'/view');
       break;
     case 'update':
       // TODO: We could also use $node->old_vid to restore the live version instead
       // using the relation table.
-      $live_vid = _content_moderation_get_node_var('vid', $node->nid, 0);
+      $live = _content_moderation_live_revision($node->nid);
 
       // If live_nid is 0, the system wants us the create a new live revision by defintion of
       // our content_moderation API ( see content_moderation_reset_live_status($nid) ).
-      if ($live_vid > 0) {
+      if ($live->vid > 0) {
         // Force the live revision back to saved live -version.
-        db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $live_vid, $node->nid);
-        drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
+        db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $live->vid, $node->nid);
+
+        if($node->content_moderation_update != true) {
+          drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
           '!here'=>l(t('here'), "node/".$node->nid)
         )), 'warning');
+        }
+        else {
+          // We need to add some miliseconds to the timestamp, otherwise the fake version will be newer then
+          // the real pending one
+          db_query('UPDATE {node_revisions} SET timestamp = %d WHERE vid = %d',time() +500, $node->vid);
+        }
       } else {
         // We dont want to reset, we want to save the current revision as the new live version.
         _content_moderation_set_node_var(array(
@@ -183,6 +190,7 @@ function content_moderation_perm() {
   $rigths = array();
   foreach($types as $type) {
     foreach($states as $from_state) {
+      dsm($states);
         $to_states = _content_moderation_next_states($from_state,$type);
         foreach($to_states as $to_state) {
           $rigths[] = "content moderation $type state $from_state to $to_state";
@@ -248,6 +256,9 @@ function theme_content_moderation_node_history($history) {
                 ,$data);
 }
 
+/*
+ * Generating a history overview of a node.
+ */
 function _content_moderation_history($node) {
   $m = drupal_get_path('module', 'content_moderation');
   drupal_add_css("$m/css/history.css");
@@ -255,8 +266,9 @@ function _content_moderation_history($node) {
   drupal_set_title(t('History'));
   return theme('content_moderation_node_history',$history);
 }
+
 /*
- * Calling our alter hook
+ * Calling our alter hook.
  */
 function _content_moderation_get_modfiy_for_first_revision(&$node) {
   //TODO: hooks / alter here
@@ -280,12 +292,12 @@ function _content_moderation_new_node(&$node) {
   $node->body = $node->body_orig;
   $node->teaser = $node->teaser_orig;
   $node->log = $node->log_orig;
-  $node->changed = time() + 10;
-  $node->timestamp = time() + 10;
   $node->vid = NULL;
+  $node->created = NULL;
+
   // Yes we dont like non-api deep system calls. But we cant use node_save as
   // we would get into a loop.
-  _node_save_revision($node, $user->uid);
+  node_save($node);
 }
 
 /*
@@ -402,7 +414,7 @@ function _content_moderation_access($op,$node) {
   }
 }
 
-/*
+
 function content_moderation_views_api() {
   return array('api' => 2.0);
-}*/
+}

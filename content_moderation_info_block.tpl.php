@@ -22,7 +22,7 @@ if(module_exists('diff')){
   $compare = l($rev_icon,$links['compare'],array('html' => true, 'attributes' => array( 'title' => t('List all revision') ) ));
 }
 
-$edit_current = l($edit_icon,$links['edit_revision'],array('html' => true, 'attributes' => array( 'title' => t('Edit this revision') ) ));
+//$edit_current = l($edit_icon,$links['edit_revision'],array('html' => true, 'attributes' => array( 'title' => t('Edit this revision') ) ));
 $delete_current = l($delete_icon,$links['delete_revision'],array('html' => true, 'attributes' => array( 'title' => t('Delete this revision') ) ));
 
 ?>
@@ -35,7 +35,7 @@ $delete_current = l($delete_icon,$links['delete_revision'],array('html' => true,
     <span class="details">&raquo; <?=date('d.m.y',$live->revision_timestamp)?> (<?=$user->name?>)</span>
   </div>
   <?php }?>
-  <?php if(_content_moderation_moderate_node_type($node->type) && ($node->vid != $live->vid)) {?>
+  <?php if(_content_moderation_statechange_allowed($node->vid) && ($node->vid != $live->vid)) {?>
     <div class="current_state info"><label>Status: </label><?=$state?> <?=$edit_state?></div>
   <?php }?>
 </div>
