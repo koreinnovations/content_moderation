@@ -1,0 +1,230 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  content_moderation_info_block.tpl.php: n/a
+#  content_moderation.module: n/a
+#  content_moderation.views.inc: n/a
+#  content_moderation_handler_filter_state.inc: n/a
+#  content_moderation.workflow.inc: n/a
+#  content_moderation.install: n/a
+#  content_moderation.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-01-13 18:05+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: content_moderation_info_block.tpl.php:18
+msgid "Edit the state of this revision like review or approval"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:19
+msgid "Edit the moderation status of this revision"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:21
+msgid "Compare this revision with the live revision"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:22
+msgid "List all revision"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:26
+msgid "Delete this revision"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:30
+msgid "Live"
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:34 content_moderation.module:63;265
+msgid "Revision"
+msgstr ""
+
+#: content_moderation.views.inc:5;6
+msgid "Node"
+msgstr ""
+
+#: content_moderation.views.inc:8
+msgid "NEW"
+msgstr ""
+
+#: content_moderation.views.inc:9
+msgid "The node ID of the node."
+msgstr ""
+
+#: content_moderation.views.inc:26
+msgid "Node Revision"
+msgstr ""
+
+#: content_moderation.views.inc:36 content_moderation_handler_filter_state.inc:26
+msgid "State"
+msgstr ""
+
+#: content_moderation.views.inc:37
+msgid "State of the node revisision"
+msgstr ""
+
+#: content_moderation.views.inc:44
+msgid "Moderated_new"
+msgstr ""
+
+#: content_moderation.views.inc:45
+msgid "Whether or not the node is moderated."
+msgstr ""
+
+#: content_moderation.views.inc:53
+msgid "Moderated"
+msgstr ""
+
+#: content_moderation.workflow.inc:35
+msgid "Changing state of revision"
+msgstr ""
+
+#: content_moderation.workflow.inc:40
+msgid "New state"
+msgstr ""
+
+#: content_moderation.workflow.inc:41
+msgid "Current state: @curstate"
+msgstr ""
+
+#: content_moderation.workflow.inc:42
+msgid "Choose the next workflow state this revision should be set to."
+msgstr ""
+
+#: content_moderation.workflow.inc:48
+msgid "Comment"
+msgstr ""
+
+#: content_moderation.workflow.inc:49
+msgid "If you wish, add an optional comment. This will be shown in the history"
+msgstr ""
+
+#: content_moderation.workflow.inc:52
+msgid "Save"
+msgstr ""
+
+#: content_moderation.workflow.inc:55
+msgid "Cancel"
+msgstr ""
+
+#: content_moderation.workflow.inc:69
+msgid "You are not allowed to change to that state!"
+msgstr ""
+
+#: content_moderation.workflow.inc:96
+msgid "The revisions state has been successfully updated to @state"
+msgstr ""
+
+#: content_moderation_handler_filter_state.inc:27
+msgid "Select a workflow state"
+msgstr ""
+
+#: content_moderation.module:80
+msgid "none"
+msgstr ""
+
+#: content_moderation.module:94
+msgid "Enables you to moderate the creation of nodes and there further editing. You can have 'Live version' for all visitors and pending revisions which need to be apoved and become the 'Live Version' then"
+msgstr ""
+
+#: content_moderation.module:138
+msgid "Your content has been saved as a pending revision. Click !here to view your revision."
+msgstr ""
+
+#: content_moderation.module:139;155
+msgid "here"
+msgstr ""
+
+#: content_moderation.module:154
+msgid "Your content has been saved as a pending version. Click !here to view the live version."
+msgstr ""
+
+#: content_moderation.module:168
+msgid "You are currently viewing a revision of this node created on @date by !author."
+msgstr ""
+
+#: content_moderation.module:181
+msgid "This document has 1 pending revision"
+msgstr ""
+
+#: content_moderation.module:183
+msgid "This document has @count pending revisions"
+msgstr ""
+
+#: content_moderation.module:231
+msgid "Initial revision - this node is still under moderation"
+msgstr ""
+
+#: content_moderation.module:232
+msgid "Auto-creating live version of the just created node"
+msgstr ""
+
+#: content_moderation.module:239
+msgid "Moderate revisions"
+msgstr ""
+
+#: content_moderation.module:262
+msgid "Date"
+msgstr ""
+
+#: content_moderation.module:263
+msgid "Author"
+msgstr ""
+
+#: content_moderation.module:264
+msgid "Transition"
+msgstr ""
+
+#: content_moderation.module:277
+msgid "History"
+msgstr ""
+
+#: content_moderation.module:10
+msgid "Change moderation state"
+msgstr ""
+
+#: content_moderation.module:18
+msgid "Moderation history"
+msgstr ""
+
+#: content_moderation.module:19
+msgid "Show the content moderation history"
+msgstr ""
+
+#: content_moderation.install:16
+msgid "Saves the current live vid of a node"
+msgstr ""
+
+#: content_moderation.install:26
+msgid "Defines all possible states"
+msgstr ""
+
+#: content_moderation.install:48
+msgid "Defines the valid transitions for states"
+msgstr ""
+
+#: content_moderation.info:0
+msgid "Content Moderation"
+msgstr ""
+
+#: content_moderation.info:0
+msgid "Content Moderation (by Impressive.media)"
+msgstr ""
+
+#: content_moderation.info:0
+msgid "Impressive.media"
+msgstr ""
+

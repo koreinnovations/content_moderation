@@ -164,9 +164,14 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       if ($node->vid != $live_vid) {
         // Get username for the revision rather than the original node.
         $revision_author = user_load($node->revision_uid);
-        drupal_set_message(t('You are currently viewing a'.$pending.' revision of this node created on @date by !author.', array(
-          '@date'=>format_date($node->revision_timestamp, 'small'),'!author'=>theme('username', $revision_author)
-        )));
+        drupal_set_message(
+          t('You are currently viewing a revision of this node created on @date by !author.',
+            array('
+              @date'=>format_date($node->revision_timestamp, 'small'),
+             '!author'=>theme('username', $revision_author)
+            )
+          )
+        );
       }
       else {
         $result = db_query('select count(vid) as revisions_count from node_revisions where vid>%d and nid=%d',$node->vid,$node->nid);
