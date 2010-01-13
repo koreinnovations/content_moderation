@@ -12,16 +12,6 @@ function content_moderation_install() {
  * Implementation of hook_schema().
  */
 function content_moderation_schema() {
-  $schema['content_moderation'] = array(
-    'description' => t('Saves the current live vid of a node'),
-    'fields' => array(
-      'vid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-      'nid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-    ),
-    'primary key' => array('vid'),
-    'unique keys' => array('nid' => array('nid'))
-  );
-
   $schema['content_moderation_revision_state'] = array(
     'description' => t('Saves the current live vid of a node'),
     'fields' => array(
@@ -36,6 +26,7 @@ function content_moderation_schema() {
     'description' => t('Defines all possible states'),
     'fields' => array(
       'name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'descr'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
     ),
     'unique keys' => array('name' => array('name'))
   );
@@ -91,6 +82,12 @@ function _content_moderation_insert_values() {
 
 function content_moderation_update_6001(){
   db_query("UPDATE {system} SET weight = 15 WHERE name = 'content_moderation'");
+}
+
+function content_moderation_update_6002(){
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","none","all")');
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","review","all")');
+  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","none","all")');
 }
 /**
  * Implementation of hook_uninstall().

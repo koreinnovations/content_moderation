@@ -34,8 +34,6 @@ $delete_current = l($delete_icon,$links['delete_revision'],array('html' => true,
   <div class="info"><label><?=t('Revision')?>: </label> <?=l($node->vid,'node/'.$live->nid.'/'.$node->vid)?> <?=$edit_current?> <?=$compare_live?> <?=$delete_current?><br/>
     <span class="details">&raquo; <?=date('d.m.y',$live->revision_timestamp)?> (<?=$user->name?>)</span>
   </div>
-  <?php }?>
-  <?php if(_content_moderation_statechange_allowed($node->vid) && ($node->vid != $live->vid)) {?>
-    <div class="current_state info"><label>Status: </label><?=$state?> <?=$edit_state?></div>
+    <div class="current_state info"><label>Status: </label><?=$state?> <?if(_content_moderation_statechange_allowed($node->vid)) { echo $edit_state;}?></div>
   <?php }?>
 </div>

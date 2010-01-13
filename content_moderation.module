@@ -112,66 +112,71 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         $node->body_orig = $node->body;
         $node->teaser_orig = $node->teaser;
         $node->log_orig = $node->log;
+
+
         // lets call our alter hook to modify the fake-live version
         _content_moderation_get_modfiy_for_first_revision($node);
         // Now node_save gets called, saving this not into the database
         // and right after it, it calls nodapi using insert. Thats were we save
         // the original node content, which will be then a pending version.
       }
+      else {
+        $live = _content_moderation_live_revision($node->nid);
+        $node->live_vid = $live->vid;
+      }
       break;
     case 'insert':
       // We need to clone the node, otherwise later the grants will be assigned to that vid
+      $node->live_vid = $node->vid;
       $node_real = drupal_clone($node);
       // as we saved the "fake live version" before in presave, lets save the original node here.
       $node_real->content_moderation_update = true;
       _content_moderation_new_node($node_real);
+      // we need to restore the live version pointer, as node_save has been called
+      // and it is automatically updating it
+      db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
       drupal_set_message(t("Your content has been saved as a pending revision. Click !here to view your revision.", array(
         '!here'=>l(t('here'), "node/$node->nid/revisions/".$node->vid.'/view')
       )), 'warning');
       break;
     case 'update':
-      // TODO: We could also use $node->old_vid to restore the live version instead
-      // using the relation table.
-      $live = _content_moderation_live_revision($node->nid);
-
-      // If live_nid is 0, the system wants us the create a new live revision by defintion of
-      // our content_moderation API ( see content_moderation_reset_live_status($nid) ).
-      if ($live->vid > 0) {
-        // Force the live revision back to saved live -version.
-        db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $live->vid, $node->nid);
-
-        if($node->content_moderation_update != true) {
-          drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
-          '!here'=>l(t('here'), "node/".$node->nid)
-        )), 'warning');
-        }
-        else {
-          // We need to add some miliseconds to the timestamp, otherwise the fake version will be newer then
-          // the real pending one
-          db_query('UPDATE {node_revisions} SET timestamp = %d WHERE vid = %d',time() +500, $node->vid);
-        }
-      } else {
-        // We dont want to reset, we want to save the current revision as the new live version.
-        _content_moderation_set_node_var(array(
-          'nid' => $node->nid,'vid' => $node->vid
-        ));
-        drupal_set_message(t('Your node has been successfuly published as the new live version'));
+      // This update api call was triggered by a node_save done in 'insert' of a creation
+      // of a content_moderated node. This node_save is saving the real node as a revision
+      // while the live one is just a template.
+      if($node->content_moderation_update == true) {
+        // We need to add some miliseconds to the timestamp, otherwise the fake version will be newer then
+        // the real pending one
+        db_query('UPDATE {node_revisions} SET timestamp = %d WHERE vid = %d',time() +500, $node->vid);
       }
+      else {
+        // Force the live revision back to saved live -version.
+        db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
+        drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
+        '!here'=>l(t('here'), "node/".$node->nid)
+        )), 'warning');
+      }
+
       break;
     case 'view':
       $live = _content_moderation_live_revision($node->nid);
       $live_vid = $live->vid;
 
       if ($node->vid != $live_vid) {
-        // This is a pending revision.
-        $pending = "";
-        // Parts of this code are extracted from revision_moderation
-
         // Get username for the revision rather than the original node.
         $revision_author = user_load($node->revision_uid);
         drupal_set_message(t('You are currently viewing a'.$pending.' revision of this node created on @date by !author.', array(
           '@date'=>format_date($node->revision_timestamp, 'small'),'!author'=>theme('username', $revision_author)
         )));
+      }
+      else {
+        $result = db_query('select count(vid) as revisions_count from node_revisions where vid>%d and nid=%d',$node->vid,$node->nid);
+        $row = db_fetch_object($result);
+        $count = $row->revisions_count;
+        if($count == 1)
+          drupal_set_message(t('This document has 1 pending revision',array('@count' => $count)));
+        else if($count > 1) {
+          drupal_set_message(t('This document has @count pending revisions',array('@count' => $count)));
+        }
       }
       break;
   }
@@ -190,10 +195,11 @@ function content_moderation_perm() {
   $rigths = array();
   foreach($types as $type) {
     foreach($states as $from_state) {
-      dsm($states);
         $to_states = _content_moderation_next_states($from_state,$type);
+        // values are translated
+        $to_states = array_keys($to_states);
         foreach($to_states as $to_state) {
-          $rigths[] = "content moderation $type state $from_state to $to_state";
+          $rigths[] = "content moderation $type state '$from_state' to '$to_state'";
         }
     }
   }
@@ -282,11 +288,6 @@ function _content_moderation_get_modfiy_for_first_revision(&$node) {
  */
 function _content_moderation_new_node(&$node) {
   global $user;
-  // save the new live vid
-  _content_moderation_set_node_var(array(
-    'nid'=>$node->nid,'vid'=>$node->vid
-  ));
-
   // We saved a "pending" version of the node first, lets restore the real content
   // and the real log message.
   $node->body = $node->body_orig;
@@ -298,27 +299,6 @@ function _content_moderation_new_node(&$node) {
   // Yes we dont like non-api deep system calls. But we cant use node_save as
   // we would get into a loop.
   node_save($node);
-}
-
-/*
- * Database helper.
- */
-function _content_moderation_get_node_var($name, $nid, $default = NULL) {
-  $result = db_fetch_object(db_query('select `%s` from {content_moderation} where nid=%d', $name, $nid));
-  return ($result === false) ? $default : $result->$name;
-}
-
-/*
- * Database helper.
- */
-function _content_moderation_set_node_var($values, $keys = NULL) {
-  if ($keys != NULL) {
-    $nid = db_result(db_query("select nid from {content_moderation} where {$keys[0]['name']}=%d", $keys[0]['value']));
-    if ($nid === false) {
-      $keys = NULL;
-    }
-  }
-  drupal_write_record('content_moderation', $values, $keys);
 }
 
 /*
@@ -381,7 +361,7 @@ function _content_moderation_change_state_link($vid,$nid) {
  * checking the transition and node type.
  */
 function _content_moderation_state_allowed($user,$from_state,$to_state,$node_type) {
-  return user_access("content moderation $node_type state $from_state to $to_state");
+  return user_access("content moderation $node_type state '$from_state' to '$to_state'");
 }
 
 /*

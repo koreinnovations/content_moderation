@@ -108,8 +108,8 @@ function content_moderation_change_state_form_submit($form, &$form_state) {
  */
 function _content_moderation_update_revision_state($vid,$nid,$state) {
   $revison_state = array(
-    'nid' => $vid,
-    'vid' => $nid,
+    'nid' => $nid,
+    'vid' => $vid,
     'state' => $state,
   );
   $keys = array();
@@ -128,8 +128,6 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
  * Make the given vid the new live version.
  */
 function _content_moderation_set_live($vid,$nid) {
-   // Set the internal pointer of the live vid.
-  _content_moderation_set_node_var(array('vid' => $vid,'nid' => $nid), array(array('name' => 'vid','value' =>$vid)));
   // Save the vid in the node table.
   db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $vid, $nid);
 }
@@ -217,7 +215,7 @@ function _content_moderation_statechange_allowed($vid,$state = NULL) {
 
   // Is this content even in moderatation?
   if(!_content_moderation_moderate_node_type($node->type)) {
-    drupal_set_message(t('this content type is not under moderation'),'error');
+    drupal_set_message(t('this content type ('.$node->type.') is not under moderation'),'error');
     return false;
   }
 
@@ -251,6 +249,7 @@ function _content_moderation_statechange_allowed($vid,$state = NULL) {
 function _content_moderation_current_state($vid) {
   $result = db_query('select state from {content_moderation_revision_state} where vid=%d',$vid);
   $row = db_fetch_object($result);
+
   if(is_object($row)) {
     return $row->state;
   }
