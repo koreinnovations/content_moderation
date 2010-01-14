@@ -12,7 +12,7 @@ function content_moderation_views_data() {
       'handler' => 'views_handler_field_node',
       'click sortable' => TRUE,
     ),
-   
+
     // Information for accepting a nid as a filter
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
@@ -60,13 +60,13 @@ function content_moderation_views_data() {
 
 
 
-/*  $data['content_moderation']['table']['join'] = array( 
+/*$data['content_moderation']['table']['join'] = array(
     'node_revisions' => array (
-		'field' => 'nid',    
-	    	'left_field' => 'nid', 
+		'field' => 'nid',
+	    	'left_field' => 'nid',
     		'left_table' => 'node_revisions'
     )
-  );     
+  );
 
   $data['content_moderation']['pending_revisions'] = array(
     'title' => t('Pending revisions'),
@@ -98,7 +98,7 @@ function content_moderation_views_handlers() {
         'parent' => 'views_handler_filter'
       )      */
     )
-  );  
+  );
 }
 
 ?>

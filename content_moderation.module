@@ -26,6 +26,14 @@ function content_moderation_menu() {
 
   return $items;
 }
+/*
+ * Implementation of hook_menu_alter
+ */
+function content_moderation_menu_alter(&$items) {
+  // we need to get this wrapper in place, as we cant use the nodeapi "prepare" op
+  // as module like taxonomy, files and so forth would not fetch the correct versions
+  $items['node/%node/edit']['page callback'] = '_content_moderation_node_edit_page';
+}
 
 /*
  * Implementing hook_block
@@ -105,6 +113,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
     // Dont moderate this content type
     return;
   }
+  //dsm($op);
   switch ($op) {
     case 'presave':
       if ( empty($node->nid)) {
@@ -129,9 +138,8 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       // We need to clone the node, otherwise later the grants will be assigned to that vid
       $node->live_vid = $node->vid;
       $node_real = drupal_clone($node);
-      // as we saved the "fake live version" before in presave, lets save the original node here.
-      $node_real->content_moderation_update = true;
-      _content_moderation_new_node($node_real);
+
+      _content_moderation_create_pending_revision($node_real);
       // we need to restore the live version pointer, as node_save has been called
       // and it is automatically updating it
       db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
@@ -146,7 +154,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       if($node->content_moderation_update == true) {
         // We need to add some miliseconds to the timestamp, otherwise the fake version will be newer then
         // the real pending one
-        db_query('UPDATE {node_revisions} SET timestamp = %d WHERE vid = %d',time() +500, $node->vid);
+        db_query('UPDATE {node_revisions} SET timestamp = %d WHERE vid = %d',time() + 1, $node->vid);
       }
       else {
         // Force the live revision back to saved live -version.
@@ -240,6 +248,34 @@ function content_moderation_form_node_type_form_alter(&$form, $form_state) {
 }
 
 /*
+ * Implementation of form_alter.
+ * Forcing new reversion and publishing.
+ */
+function content_moderation_form_alter(&$form, $form_state, $form_id)  {
+  if (!_content_moderation_moderate_node_type($form['#node']->type)) {
+    // Dont moderate this content type.
+    return;
+  }
+
+  if ($form['#id'] == 'node-form') {
+    // force new revision
+    $form['revision_information']['revision']['#prefix'] = t('As this content is in moderation, you cannot choose here. A new revision is always created.');
+    $form['revision_information']['revision']['#disabled'] = true;
+    $form['revision_information']['revision']['#default_value'] = true;
+    $descr = t('You cant choose here, as this content is under moderation. Publishing is forced.');
+    if(is_array($form['options']['status'])) {
+      $form['options']['status']['#disabled'] = true;
+      $form['options']['status']['#default_value'] = true;
+      $form['options']['status']['#prefix'] = $descr;
+    }
+    if(module_exists('impressive_media_icombined_access')) {
+      $form['custom_options']['status']['#disabled'] = true;
+      $form['custom_options']['status']['#default_value'] = true;
+      $form['custom_options']['status']['#prefix'] = $descr;
+    }
+  }
+}
+/*
  * Implementation content_moderation_node_history
  * Theming the output of content moderations history table
  */
@@ -268,6 +304,39 @@ function theme_content_moderation_node_history($history) {
 }
 
 /*
+ * This is out small helper to ensure, that always the newes vid gets edited.
+ * The normal node API would edit the vid which is currently in {node},
+ * But we want to edit the VID which is the most recent one.
+ */
+function _content_moderation_node_edit_page($node) {
+  if (_content_moderation_moderate_node_type($node->type)) {
+    $vid =  _content_moderation_latest_revision($node->nid);
+    // We only need to change the behavior if the current version is not the latest pending version
+    if($node->vid != $vid) {
+      $node = node_load($node->nid,$vid);
+      drupal_set_message(t('You are now editting the most recent pending revision (@revision) and not the live version!',array('@revision' => $vid)),'warning');
+    }
+  }
+
+  return node_page_edit($node);
+}
+
+/*
+ * Fetch the revision data without using node_load to save some performance.
+ */
+function _content_moderation_revision_infos($vid) {
+  $result = db_query('SELECT * FROM node_revisions WHERE vid=%d',$vid);
+  return db_fetch_object($result);
+}
+
+/*
+ * Calculated the most recent vid of the current node
+ */
+function _content_moderation_latest_revision($nid) {
+  return db_result(db_query('SELECT MAX(vid) FROM node_revisions WHERE nid=%d',$nid));
+}
+
+/*
  * Generating a history overview of a node.
  */
 function _content_moderation_history($node) {
@@ -291,8 +360,11 @@ function _content_moderation_get_modfiy_for_first_revision(&$node) {
  * Its creating a live version which is a placeholder and
  * moving the real content to a moderated revision
  */
-function _content_moderation_new_node(&$node) {
+function _content_moderation_create_pending_revision(&$node) {
   global $user;
+
+  // as we saved the "fake live version" before in presave, lets save the original node here.
+  $node->content_moderation_update = true;
   // We saved a "pending" version of the node first, lets restore the real content
   // and the real log message.
   $node->body = $node->body_orig;
@@ -349,9 +421,7 @@ function _content_moderation_moderate_node_types() {
  * Getting nid by vid
  */
 function _content_moderation_get_nid($vid) {
-  $result = db_query('select nid from {node_revisions} where vid=%d',$vid);
-  $row = db_fetch_object($result);
-  return $row->nid;
+  return db_result(db_query('select nid from {node_revisions} where vid=%d',$vid));
 }
 
 /*
