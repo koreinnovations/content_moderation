@@ -1,4 +1,5 @@
 <?
+
 require_once('content_moderation.workflow.inc');
 
 /*
@@ -26,6 +27,7 @@ function content_moderation_menu() {
 
   return $items;
 }
+
 /*
  * Implementation of hook_menu_alter
  */
@@ -47,19 +49,22 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
     case 'view':
       switch($delta) {
         case 0:
-          $node = menu_get_object('node');
-          $live = _content_moderation_live_revision($node->nid);
-          // node need to show the block if we are not looking at a revision
-          if($node->vid == $live->vid) {
-            return "";
+          $node = _content_moderation_get_current_viewed_node();
+
+          // No need to show the block if the viewd node is not moderated. Questionable.
+          if (!_content_moderation_moderate_node_type($node->type)) {
+            return;
           }
 
-          $live_link = l($live->vid,'node/'.$live->nid);
-          $state = _content_moderation_current_state($node->vid);
+          $live = _content_moderation_live_revision($node->nid);
 
           $m = drupal_get_path('module', 'content_moderation');
           drupal_add_css("$m/css/block.css");
 
+          $latest = _content_moderation_get_latest_revisions($node->nid,5);
+          $revisions_list = theme('content_moderation_revisions_list',$latest);
+
+          $state = _content_moderation_current_state($node->vid);
           // All kinds of actions we can do.
           $links['edit_revision'] = "node/{$node->nid}/revisions/{$node->vid}/edit";
           $links['delete_revision'] = "node/{$node->nid}/revisions/{$node->vid}/delete";
@@ -67,9 +72,10 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
           $links['edit_state'] = _content_moderation_change_state_link($node->vid,$node->nid);
           $links['compare_with_live'] = "node/{$node->nid}/revisions/view/{$node->vid}/{$live->vid}";
           $links['compare'] = "node/{$node->nid}/revisions";
+          $links['live_view'] = 'node/'.$live->nid;
 
           $block['subject'] = t("Revision");
-          $block['content'] = theme('content_moderation_info_block',$node, $links, $state, $live_link, $live);
+          $block['content'] = theme('content_moderation_info_block',$node, $links, $state, $live_link, $live,$revisions_list);
           return $block;
         break;
       }
@@ -85,11 +91,15 @@ function content_moderation_theme() {
   return array(
     'content_moderation_info_block' => array(
       'template' => 'content_moderation_info_block',
-      'arguments' => array('node' => NULL,'links' => NULL, 'state' => t('none'), 'live_link' => NULL, 'live' => NULL),
+      'arguments' => array('node' => NULL,'links' => NULL, 'state' => t('none'), 'live_link' => NULL, 'live' => NULL,'revisions_list' => ''),
     ),
     'content_moderation_node_history' => array(
      'arguments' => array('history' => array()),
-    )
+    ),
+    'content_moderation_revisions_list' => array(
+      'template' => 'content_moderation_revisions_list',
+      'arguments' => array('revisions' => NULL),
+    ),
   );
 }
 
@@ -174,8 +184,8 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         $revision_author = user_load($node->revision_uid);
         drupal_set_message(
           t('You are currently viewing a revision of this node created on @date by !author.',
-            array('
-              @date'=>format_date($node->revision_timestamp, 'small'),
+            array(
+             '@date'=>format_date($node->revision_timestamp, 'small'),
              '!author'=>theme('username', $revision_author)
             )
           )
@@ -306,6 +316,13 @@ function theme_content_moderation_node_history($history) {
 }
 
 /*
+ * Needed by the views API
+ */
+function content_moderation_views_api() {
+  return array('api' => 2.0);
+}
+
+/*
  * This is out small helper to ensure, that always the newes vid gets edited.
  * The normal node API would edit the vid which is currently in {node},
  * But we want to edit the VID which is the most recent one.
@@ -409,8 +426,7 @@ function _content_moderation_moderate_node_types() {
   $types = node_get_types('types');
   $result= array();
   foreach($types as $type) {
-      // Is this content even in moderatation?
-
+    // Is this content even in moderatation?
     if( _content_moderation_moderate_node_type($type->type)) {
       $result[] = $type->type;
     }
@@ -472,6 +488,38 @@ function _content_moderation_access($op,$node) {
 }
 
 
-function content_moderation_views_api() {
-  return array('api' => 2.0);
+function _content_moderation_get_latest_revisions($nid,$count = 5,$vid =NULL) {
+  if($vid == NULL) {
+    $live = _content_moderation_live_revision($nid);
+    $vid = $live->vid;
+  }
+
+  // TODO: important, most probably use db_rewrite_sql here
+  $result = db_query('select nr.*,cmrs.state from {node_revisions} as nr LEFT JOIN {content_moderation_revision_state} as cmrs on nr.vid=cmrs.vid where nr.nid=%d AND nr.vid>%d order by nr.vid DESC limit %d',$nid,$vid,$count);
+  $revs = array();
+  while ($rev = db_fetch_object($result)) {
+    $revs[] = $rev;
+  }
+  return $revs;
+}
+
+function _content_moderation_get_current_viewed_node() {
+  $router_item = menu_get_item($path);
+  // if its not a node view, return
+  if($router_item['map'][0] != 'node') {
+    return NULL;
+  }
+
+  $node = $router_item['map'][1];
+  // something wrong with the url
+  if(!is_object($node)) {
+    return NULL;
+  }
+
+  if(is_numeric($router_item['map'][2]) && $router_item['map'][3] == 'view') {
+    $vid = $router_item['map'][2];
+
+    $node = node_load($node->nid,$vid);
+  }
+  return $node;
 }

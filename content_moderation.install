@@ -6,6 +6,8 @@ function content_moderation_install() {
   // Create tables.
   drupal_install_schema('content_moderation');
   _content_moderation_insert_values();
+
+  db_query("UPDATE {system} SET weight = 5 WHERE name = 'content_moderation'");
 }
 
 /**
@@ -75,20 +77,15 @@ function _content_moderation_insert_values() {
       db_query('insert into {content_moderation_states} (`name`) VALUES("%s")',$state);
   }
 
+  //transitions
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("none","review","all")');
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","approve","all")');
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","live","all")');
-}
-
-function content_moderation_update_6001(){
-  db_query("UPDATE {system} SET weight = 15 WHERE name = 'content_moderation'");
-}
-
-function content_moderation_update_6002(){
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","none","all")');
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","review","all")');
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","none","all")');
 }
+
 /**
  * Implementation of hook_uninstall().
  */
