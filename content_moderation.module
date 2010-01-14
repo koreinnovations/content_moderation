@@ -267,10 +267,12 @@ function content_moderation_form_alter(&$form, $form_state, $form_id)  {
       $form['options']['status']['#disabled'] = true;
       $form['options']['status']['#default_value'] = true;
       $form['options']['status']['#prefix'] = $descr;
+      $form['options']['status']['#value'] = true;
     }
     if(module_exists('impressive_media_icombined_access')) {
       $form['custom_options']['status']['#disabled'] = true;
       $form['custom_options']['status']['#default_value'] = true;
+      $form['custom_options']['status']['#value'] = true;
       $form['custom_options']['status']['#prefix'] = $descr;
     }
   }
@@ -464,7 +466,7 @@ function _content_moderation_access($op,$node) {
   //else the default
   switch($op) {
     case 'view history':
-      return node_acess('view',$node);
+      return node_access('view',$node);
     break;
   }
 }
