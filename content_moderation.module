@@ -50,7 +50,6 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
       switch($delta) {
         case 0:
           $node = _content_moderation_get_current_viewed_node();
-
           // No need to show the block if the viewd node is not moderated. Questionable.
           if (!_content_moderation_moderate_node_type($node->type)) {
             return;
@@ -61,10 +60,10 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
           $m = drupal_get_path('module', 'content_moderation');
           drupal_add_css("$m/css/block.css");
 
-          $latest = _content_moderation_get_latest_revisions($node->nid,5);
+          $latest = _content_moderation_get_latest_revisions($node->nid,5,NULL,array($node->vid));
           $revisions_list = theme('content_moderation_revisions_list',$latest);
 
-          $state = _content_moderation_current_state($node->vid);
+          $state = ucfirst(_content_moderation_current_state($node->vid));
           // All kinds of actions we can do.
           $links['edit_revision'] = "node/{$node->nid}/revisions/{$node->vid}/edit";
           $links['delete_revision'] = "node/{$node->nid}/revisions/{$node->vid}/delete";
@@ -287,6 +286,7 @@ function content_moderation_form_alter(&$form, $form_state, $form_id)  {
     }
   }
 }
+
 /*
  * Implementation content_moderation_node_history
  * Theming the output of content moderations history table
@@ -487,15 +487,29 @@ function _content_moderation_access($op,$node) {
   }
 }
 
-
-function _content_moderation_get_latest_revisions($nid,$count = 5,$vid =NULL) {
+/*
+ * Get a number of latest revisions of a node.
+ */
+function _content_moderation_get_latest_revisions($nid,$count = 5,$vid =NULL, $exclude = array()) {
   if($vid == NULL) {
     $live = _content_moderation_live_revision($nid);
     $vid = $live->vid;
   }
 
+  $filter = array();
+  foreach($exclude as $v) {
+    $filter[] = "nr.vid<>$v";
+  }
+  if(count($filter) > 0) {
+    $filter = join(' AND ',$filter);
+    $filter = ' AND '.$filter;
+  }
+  else {
+    $filter = '';
+  }
+
   // TODO: important, most probably use db_rewrite_sql here
-  $result = db_query('select nr.*,cmrs.state from {node_revisions} as nr LEFT JOIN {content_moderation_revision_state} as cmrs on nr.vid=cmrs.vid where nr.nid=%d AND nr.vid>%d order by nr.vid DESC limit %d',$nid,$vid,$count);
+  $result = db_query("select nr.*,cmrs.state from {node_revisions} as nr LEFT JOIN {content_moderation_revision_state} as cmrs on nr.vid=cmrs.vid where nr.nid=%d AND nr.vid>%d {$filter} order by nr.vid DESC limit %d",$nid,$vid,$count);
   $revs = array();
   while ($rev = db_fetch_object($result)) {
     $revs[] = $rev;
