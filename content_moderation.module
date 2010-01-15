@@ -1,4 +1,5 @@
-<?
+<?php
+// $Id$
 
 require_once('content_moderation.workflow.inc');
 
@@ -314,6 +315,8 @@ function theme_content_moderation_node_history($history) {
 }
 
 /*
+ * Implements hook_views_api().
+ *
  * Needed by the views API
  */
 function content_moderation_views_api() {
