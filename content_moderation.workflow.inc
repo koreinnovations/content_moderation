@@ -114,9 +114,7 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
   );
   $keys = array();
   // Check if we have an entry allready. Update if needed.
-  $result = db_fetch_object(
-              db_query("select vid from {content_moderation_revision_state} where vid=%d", $vid)
-            );
+  $result = db_fetch_object( db_query("select vid from {content_moderation_revision_state} where vid=%d", $vid) );
   if(is_object($result)) {
     $keys = array('vid');
   }
@@ -158,7 +156,7 @@ function _content_moderation_save_history($node,$curstate,$nextstate,$uid,$comme
  * Gets the history of a node or a revision, depending on the key.
  */
 function _content_moderation_get_history($key) {
-  $result = db_query('select * from content_moderation_node_history where '.$key['name'].'=%d order by stamp DESC' ,$key['value']);
+  $result = db_query('select * from {content_moderation_node_history} where '.$key['name'].'=%d order by stamp DESC' ,$key['value']);
   $history = array();
 
   while ($entry = db_fetch_object($result)) {

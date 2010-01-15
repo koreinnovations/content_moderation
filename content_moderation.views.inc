@@ -18,6 +18,12 @@ function content_moderation_views_data() {
     'filter' => array(
       'handler' => 'content_moderation_handler_filter_state',
     ),
+    'field' => array(
+      'handler' => 'views_handler_field',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   return $data;

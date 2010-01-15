@@ -191,9 +191,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         );
       }
       else {
-        $result = db_query('select count(vid) as revisions_count from node_revisions where vid>%d and nid=%d',$node->vid,$node->nid);
-        $row = db_fetch_object($result);
-        $count = $row->revisions_count;
+        $count = db_result(db_query('select count(vid) from {node_revisions} where vid>%d and nid=%d',$node->vid,$node->nid));
         if($count == 1)
           drupal_set_message(t('This document has 1 pending revision',array('@count' => $count)));
         else if($count > 1) {
@@ -344,7 +342,7 @@ function _content_moderation_node_edit_page($node) {
  * Fetch the revision data without using node_load to save some performance.
  */
 function _content_moderation_revision_infos($vid) {
-  $result = db_query('SELECT * FROM node_revisions WHERE vid=%d',$vid);
+  $result = db_query('SELECT * FROM {node_revisions} WHERE vid=%d',$vid);
   return db_fetch_object($result);
 }
 
@@ -352,7 +350,7 @@ function _content_moderation_revision_infos($vid) {
  * Calculated the most recent vid of the current node
  */
 function _content_moderation_latest_revision($nid) {
-  return db_result(db_query('SELECT MAX(vid) FROM node_revisions WHERE nid=%d',$nid));
+  return db_result(db_query('SELECT MAX(vid) FROM {node_revisions} WHERE nid=%d',$nid));
 }
 
 /*

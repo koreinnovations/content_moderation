@@ -12,7 +12,7 @@ class content_moderation_handler_filter_state extends views_handler_filter {
     return $options;
   }
 
-  function options_form(&$form, &$form_state) {
+  function value_form(&$form, &$form_state) {
     $result = db_query("select name FROM {content_moderation_states}");
     while ($item = db_fetch_array($result)) {
       $options[$item['name']] = $item['name'];
