@@ -1,4 +1,5 @@
 <?
+// $Id$
 
 require_once('content_moderation.workflow.inc');
 require_once('content_moderation.trigger.inc');

@@ -1,4 +1,5 @@
 <?
+// $Id$
 
 /*
  * General form to change the state of a revision

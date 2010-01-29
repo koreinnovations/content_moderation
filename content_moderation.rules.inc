@@ -1,4 +1,6 @@
 <?php
+// $Id$
+
 /*
  * Implementation of the rules hook_rules_event_info
  * Docs at: http://drupal.org/node/298549

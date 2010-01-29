@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 // For docs have a look on http://drupal.org/node/375833
 
