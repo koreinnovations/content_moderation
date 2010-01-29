@@ -1,7 +1,8 @@
-<?php
-// $Id$
+<?
 
 require_once('content_moderation.workflow.inc');
+require_once('content_moderation.trigger.inc');
+require_once('content_moderation.rules.inc');
 
 /*
  * Implementation of hook_menu().
@@ -304,6 +305,7 @@ function theme_content_moderation_node_history($history) {
       l($e->vid,"node/{$e->nid}/revisions/{$e->vid}/view")   // revision
     );
   }
+
   return theme('table',
                 array(
                       t('Date'),
@@ -315,8 +317,6 @@ function theme_content_moderation_node_history($history) {
 }
 
 /*
- * Implements hook_views_api().
- *
  * Needed by the views API
  */
 function content_moderation_views_api() {
@@ -537,4 +537,28 @@ function _content_moderation_get_current_viewed_node() {
     $node = node_load($node->nid,$vid);
   }
   return $node;
+}
+
+/*
+ * Small helper for trigger and events
+ */
+function _content_moderation_node_transition_matrix() {
+  static $node_state_matrix = array();
+  // chaching
+  if(count($node_state_matrix) > 0) {
+    return $node_state_matrix;
+  }
+  $states = _content_moderation_states();
+  $types = _content_moderation_moderate_node_types();
+  foreach($types as $type) {
+    foreach($states as $from_state) {
+        $to_states = _content_moderation_next_states($from_state,$type);
+        // Values are translated.
+        $to_states = array_keys($to_states);
+        foreach($to_states as $to_state) {
+          $node_state_matrix["{$type}_{$from_state}_{$to_state}"]= t("State of node type @type changed from '@from_state' to '@to_state'", array('@type' => $type, '@from_state' => $from_state, '@to_state' => $to_state));
+        }
+    }
+  }
+  return $node_state_matrix;
 }

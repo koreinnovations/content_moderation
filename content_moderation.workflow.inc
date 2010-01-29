@@ -1,5 +1,4 @@
-<?php
-// $Id$
+<?
 
 /*
  * General form to change the state of a revision
@@ -151,6 +150,13 @@ function _content_moderation_save_history($node,$curstate,$nextstate,$uid,$comme
   );
 
   drupal_write_record('content_moderation_node_history', $history, array());
+  // As we log everything this is the proper place to fire any events for trigger
+  if(module_exists('trigger')) {
+    module_invoke_all('content_moderation', "{$node->type}_{$curstate}_{$nextstate}", $user);
+  }
+  if(module_exists('rules')) {
+    rules_invoke_event("{$node->type}_{$curstate}_{$nextstate}", $node);
+  }
 }
 
 /*

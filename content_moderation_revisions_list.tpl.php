@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /*
  * Usable values
  * $node : currently viewed node

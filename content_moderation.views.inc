@@ -1,9 +1,5 @@
-<?php
-// $Id$
+<?
 
-/**
- * Implements hook_views_data().
- */
 function content_moderation_views_data() {
   $data = array();
 
@@ -33,9 +29,6 @@ function content_moderation_views_data() {
   return $data;
 }
 
-/**
- * Implements hook_views_handlers
- */
 function content_moderation_views_handlers() {
   return array(
     'handlers' => array(
