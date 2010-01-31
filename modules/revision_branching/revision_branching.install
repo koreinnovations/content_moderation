@@ -1,0 +1,39 @@
+<?php
+// $Id$
+
+# Copyright (c) 2010 Impressive.media
+# Author: Eugen Mayer
+
+/**
+ * Implementation of hook_install().
+ */
+function revision_branching_install() {
+  // Create tables.
+  drupal_install_schema('revision_branching');
+
+  db_query("UPDATE {system} SET weight = 5 WHERE name = 'revision_branching'");
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function revision_branching_schema() {
+  $schema['node_revision_relation'] = array(
+    'description' => t('Saves the relation on which revision a revision is based-'),
+    'fields' => array(
+      'vid_parent'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'vid_child'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function revision_branching_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('revision_branching');
+}
+

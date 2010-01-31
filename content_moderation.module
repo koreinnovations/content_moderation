@@ -1,6 +1,9 @@
 <?
 // $Id$
 
+# Copyright (c) 2010 Impressive.media
+# Author: Eugen Mayer
+
 require_once('content_moderation.workflow.inc');
 require_once('content_moderation.trigger.inc');
 require_once('content_moderation.rules.inc');

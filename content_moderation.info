@@ -1,3 +1,4 @@
+; $Id$
 ; Information added by drupal.org packaging script on 2008-07-13
 version = "6.x-1.x-dev"
 project = "content_moderation"

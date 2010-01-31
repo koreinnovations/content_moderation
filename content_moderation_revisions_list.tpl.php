@@ -1,5 +1,8 @@
 <?php
 // $Id$
+
+# Copyright (c) 2010 Impressive.media
+# Author: Eugen Mayer
 /*
  * Usable values
  * $node : currently viewed node

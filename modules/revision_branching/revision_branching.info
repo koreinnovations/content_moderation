@@ -1,0 +1,10 @@
+; $Id$
+; Information added by drupal.org packaging script on 2008-07-13
+version = "6.x-1.x-dev"
+project = "revision_branching"
+datestamp = "1215907852"
+core = "6.x"
+name = Revision branching
+dependencies[] = content_moderation
+description = Enables you to edit revisions and therefor branch of. So new revisions are based on some specific revision. (by Impressive.media)
+package = Impressive.media
