@@ -1,6 +1,9 @@
 <?
 // $Id$
 
+# Copyright (c) 2010 Impressive.media
+# Author: Eugen Mayer
+
 /*
  * General form to change the state of a revision
  * Currently we only support changing from one step to the other
