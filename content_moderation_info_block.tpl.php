@@ -22,16 +22,16 @@ $view_icon = '<span class="tinyicon t_viewicon"></span>';
 
 /* actions */
 if(_content_moderation_statechange_allowed($node->vid)) {
-  $edit_state = l($edit_state_icon,$links['edit_state'],array('html' => true, 'attributes' => array( 'title' => t('Edit the state of this revision like review or approval') ) ));
+  $edit_state = l($edit_state_icon,$links['edit_state'],array('html' => true, 'attributes' => array( 'title' => t('Edit the state of this revision (review, approve).') ) ));
 }
-$edit_live = l($edit_icon,$links['edit_live'],array('html' => true, 'attributes' => array( 'title' => t('Edit the moderation status of this revision') ) ));
+$edit_live = l($edit_icon,$links['edit_live'],array('html' => true, 'attributes' => array( 'title' => t('Edit the moderation status of this revision.') ) ));
 
 $view_live_link = l($view_icon,$links['live_view'],array('html' => true, 'attributes' => array( 'title' => t('View live revision') ) ));
-$view_current_link = l($view_icon,"node/{$live->nid}/revisions/{$node->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View this revision') ) ));
+$view_current_link = l($view_icon,"node/{$live->nid}/revisions/{$node->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View this revision.') ) ));
 
 if(module_exists('diff')){
-  $compare_live = l($rev_icon,$links['compare_with_live'],array('html' => true, 'attributes' => array( 'title' => t('Compare this revision with the live revision') ) ));
-  $compare = l($rev_icon,$links['compare'],array('html' => true, 'attributes' => array( 'title' => t('List all revision') ) ));
+  $compare_live = l($rev_icon,$links['compare_with_live'],array('html' => true, 'attributes' => array( 'title' => t('Compare this revision with the live revision.') ) ));
+  $compare = l($rev_icon,$links['compare'],array('html' => true, 'attributes' => array( 'title' => t('List all revisions.') ) ));
 }
 // TODO: first see how revision deleting, esp. the live ones, should be handled
 //$delete_current = l($delete_icon,$links['delete_revision'],array('html' => true, 'attributes' => array( 'title' => t('Delete this revision') ) ));

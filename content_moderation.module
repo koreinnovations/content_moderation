@@ -23,7 +23,7 @@ function content_moderation_menu() {
   );
   $items["node/%node/moderation_history"] = array(
       'title' => 'Moderation history',
-      'description' => 'Show the content moderation history',
+      'description' => t('Show the content moderation history.'),
       'type' => MENU_LOCAL_TASK,
       'page callback' => '_content_moderation_history',
       'page arguments' => array(1),
@@ -49,7 +49,7 @@ function content_moderation_menu_alter(&$items) {
 function content_moderation_block($op = "list", $delta = 0, $edit = array()){
   switch($op) {
     case 'list':
-      $blocks[0]['info'] = "Content moderation info";
+      $blocks[0]['info'] = t('Content moderation info');
       return $blocks;
     break;
     case 'view':
@@ -114,7 +114,7 @@ function content_moderation_theme() {
 function content_moderation_help($path, $arg) {
   switch ($path) {
     case 'admin/help#content_moderation':
-      return '<p>'. t("Enables you to moderate the creation of nodes and there further editing. You can have 'Live version' for all visitors and pending revisions which need to be apoved and become the 'Live Version' then") .'</p>';
+      return '<p>'. t("Enables you to moderate the creation of nodes and there further editing. You can have a 'Live version' for all visitors and pending revisions which need to be approved and become the new 'Live Version' then.") .'</p>';
   }
 }
 
@@ -188,7 +188,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         // Get username for the revision rather than the original node.
         $revision_author = user_load($node->revision_uid);
         drupal_set_message(
-          t('You are currently viewing a revision of this node created on @date by !author.',
+          t('The revision of this node has been created on @date by !author.',
             array(
              '@date'=>format_date($node->revision_timestamp, 'small'),
              '!author'=>theme('username', $revision_author)
@@ -249,8 +249,8 @@ function content_moderation_reset_live_status($nid = NULL) {
  * Implementation of hook_modify_first_revision_alter
  */
 function content_moderation_content_moderation_modify_first_revision_alter(&$node) {
-  $node->body = t('Initial revision - this node is still under moderation');
-  $node->log = t('Auto-creating live version of the just created node');
+  $node->body = t('Initial revision - this node is under moderation and no revision has been set live yet.');
+  $node->log = t('Auto-creating live version as a template');
 }
 
 /*
@@ -338,7 +338,7 @@ function _content_moderation_node_edit_page($node) {
     // We only need to change the behavior if the current version is not the latest pending version
     if($node->vid != $vid) {
       $node = node_load($node->nid,$vid);
-      drupal_set_message(t('You are now editting the most recent pending revision (@revision) and not the live version!',array('@revision' => $vid)),'warning');
+      drupal_set_message(t('You are now editing the most recent pending revision (@revision) and not the live version!',array('@revision' => $vid)),'warning');
     }
   }
 
