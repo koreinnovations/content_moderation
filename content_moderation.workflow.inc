@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 
 # Copyright (c) 2010 Impressive.media

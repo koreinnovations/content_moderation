@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 
 /*
@@ -42,5 +42,3 @@ function content_moderation_views_handlers() {
     )
   );
 }
-
-?>

@@ -35,4 +35,3 @@ class content_moderation_handler_filter_state extends views_handler_filter {
     $this->query->add_where($this->options['group'], "$this->table_alias.$this->real_field " . $this->operator . " '%s'", $this->value);
   }
 }
-

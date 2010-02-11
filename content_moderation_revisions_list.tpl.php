@@ -13,8 +13,7 @@
  */
 ?>
 <div class='revision_list'>
-<?
-
+<?php
 foreach($revisions as $rev) {
   $edit_icon = '<span class="tinyicon t_editicon"></span>';
   $rev_icon = '<span class="tinyicon t_revisionicon"></span>';
@@ -37,10 +36,10 @@ foreach($revisions as $rev) {
     $state = ucfirst(t($rev->state));
   }
   else {
-    $state  = ucfirst(t('None'));
+    $state  = ucfirst(t('none'));
   }
 ?>
-<span class="revision"><?=$rev->vid?>: (<?=$state?>) <?=$view_link?><?=$edit_state_link?><?=$compare_live?></span>
+<span class="revision"><?php print $rev->vid?>: (<?php print $state?>) <?php print $view_link?><?php print $edit_state_link?><?php print $compare_live?></span>
 <?php
 }
 ?>

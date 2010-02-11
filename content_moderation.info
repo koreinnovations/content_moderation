@@ -6,4 +6,4 @@ datestamp = "1215907852"
 core = "6.x"
 name = Content Moderation
 description = Content Moderation (by Impressive.media)
-package = Impressive.media
+package = Drupal Wiki

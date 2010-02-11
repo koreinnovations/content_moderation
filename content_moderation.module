@@ -1,4 +1,4 @@
-<?
+<?php
 // $Id$
 
 # Copyright (c) 2010 Impressive.media
@@ -188,10 +188,10 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         // Get username for the revision rather than the original node.
         $revision_author = user_load($node->revision_uid);
         drupal_set_message(
-          t('The revision of this node has been created on @date by !author.',
+          t('The revision of this node has been created on @date by @author.',
             array(
-             '@date'=>format_date($node->revision_timestamp, 'small'),
-             '!author'=>theme('username', $revision_author)
+             '@date'=> format_date($node->revision_timestamp, 'small'),
+             '@author'=> theme('username', $revision_author)
             )
           )
         );

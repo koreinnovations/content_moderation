@@ -38,20 +38,20 @@ if(module_exists('diff')){
 
 ?>
 <div id="content_moderation">
-  <h4><?=t('Live')?></h4>
-   <div class="info live_info"><?=$live->vid?>: <?=$live_link.$view_live_link.$edit_live.$compare?><br/>
-    <span class="details">&raquo; <?=date('d.m.y',$live->changed)?> (<?=$user->name?>)</span>
+  <h4><?php print t('Live')?></h4>
+   <div class="info live_info"><?php print $live->vid?>: <?=$live_link.$view_live_link.$edit_live.$compare?><br/>
+    <span class="details">&raquo; <?php print date('d.m.y',$live->changed)?> (<?php print $user->name?>)</span>
   </div>
   <?php if($node->vid != $live->vid) {?>
-  <h4><?=t('Viewing')?></h4>
-  <div class="info"><label><?=$node->vid?>:</label> (<?=$state?>) <?=$view_current_link.$edit_state.$compare_live.$delete_current?><br/>
-    <span class="details">&raquo; <?=date('d.m.y',$live->revision_timestamp)?> (<?=$user->name?>)</span>
-    <span class="details state">&raquo; Status: <?=$state?></span>
+  <h4><?php print t('Viewing')?></h4>
+  <div class="info"><label><?php print $node->vid?>:</label> (<?php print $state?>) <?php print $view_current_link.$edit_state.$compare_live.$delete_current?><br/>
+    <span class="details">&raquo; <?php print date('d.m.y',$live->revision_timestamp)?> (<?php print $user->name?>)</span>
+    <span class="details state">&raquo; Status: <?php print t($state)?></span>
   </div>
   <?php }?>
 
   <?if($revisions_list != "") { ?>
-  <h4><?=t('Pending')?></h4>
+  <h4><?php print t('Pending')?></h4>
   <?php
       echo $revisions_list;
    } ?>
