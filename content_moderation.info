@@ -1,9 +1,6 @@
 ; $Id$
-; Information added by drupal.org packaging script on 2008-07-13
-version = "6.x-1.x-dev"
 project = "content_moderation"
-datestamp = "1215907852"
 core = "6.x"
 name = Content Moderation
 description = Content Moderation (by Impressive.media)
-package = Drupal Wiki
+package = "Drupal Wiki"
