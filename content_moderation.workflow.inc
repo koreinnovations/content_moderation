@@ -92,7 +92,7 @@ function content_moderation_change_state_form_submit($form, &$form_state) {
   // TODO: the "final" state maybe should not be hardcoded later.
   if($nextstate == 'live') {
     _content_moderation_set_live($node->vid,$node->nid);
-    drupal_set_message(t("This revision {$node->vid} has now been published as the new live version."));
+    drupal_set_message(t("This revision !vid has now been published as the new live version.", array('!vid' => $node->vid)));
   }
 
   // History entry.
@@ -229,7 +229,7 @@ function _content_moderation_statechange_allowed($vid,$state = NULL) {
 
   // Is this content even in moderatation?
   if(!_content_moderation_moderate_node_type($node->type)) {
-    drupal_set_message(t('this content type ('.$node->type.') is not under moderation'),'error');
+    drupal_set_message(t('this content type (!type) is not under moderation', array('!type' => $node->type)),'error');
     return false;
   }
 

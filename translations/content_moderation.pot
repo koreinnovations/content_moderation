@@ -5,11 +5,11 @@
 # Generated from files:
 #  content_moderation_info_block.tpl.php: n/a
 #  content_moderation_revisions_list.tpl.php: n/a
+#  content_moderation.module: n/a
 #  content_moderation.rules.inc: n/a
 #  content_moderation.views.inc: n/a
 #  content_moderation.workflow.inc: n/a
 #  content_moderation_handler_filter_state.inc: n/a
-#  content_moderation.module: n/a
 #  content_moderation.install: n/a
 #  content_moderation.info: n/a
 #
@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-02-06 22:07+0100\n"
+"POT-Creation-Date: 2010-02-21 09:28+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Compare this revision with the live revision."
 msgstr ""
 
-#: content_moderation_info_block.tpl.php:34 content_moderation_revisions_list.tpl.php:32
+#: content_moderation_info_block.tpl.php:34 content_moderation_revisions_list.tpl.php:31
 msgid "List all revisions."
 msgstr ""
 
@@ -62,20 +62,20 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: content_moderation_revisions_list.tpl.php:24
+#: content_moderation_revisions_list.tpl.php:23
 msgid "View revision @rev."
 msgstr ""
 
-#: content_moderation_revisions_list.tpl.php:27
+#: content_moderation_revisions_list.tpl.php:26
 msgid "Change state of revision @rev."
 msgstr ""
 
-#: content_moderation_revisions_list.tpl.php:31
+#: content_moderation_revisions_list.tpl.php:30
 msgid "Compare this revision with the current live revision."
 msgstr ""
 
-#: content_moderation_revisions_list.tpl.php:40
-msgid "None"
+#: content_moderation_revisions_list.tpl.php:39 content_moderation.module:99
+msgid "none"
 msgstr ""
 
 #: content_moderation.rules.inc:16
@@ -130,8 +130,16 @@ msgstr ""
 msgid "You are not allowed to change to that state!"
 msgstr ""
 
+#: content_moderation.workflow.inc:95
+msgid "This revision !vid has now been published as the new live version."
+msgstr ""
+
 #: content_moderation.workflow.inc:100
 msgid "The revisions state has been successfully updated to @state"
+msgstr ""
+
+#: content_moderation.workflow.inc:232
+msgid "this content type (!type) is not under moderation"
 msgstr ""
 
 #: content_moderation_handler_filter_state.inc:28
@@ -152,10 +160,6 @@ msgstr ""
 
 #: content_moderation.module:82;318
 msgid "Revision"
-msgstr ""
-
-#: content_moderation.module:99
-msgid "none"
 msgstr ""
 
 #: content_moderation.module:117
@@ -259,6 +263,6 @@ msgid "Content Moderation (by Impressive.media)"
 msgstr ""
 
 #: content_moderation.info:0
-msgid "Impressive.media"
+msgid "Drupal Wiki"
 msgstr ""
 

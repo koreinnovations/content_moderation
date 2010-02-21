@@ -1,260 +1,276 @@
+# $Id$
+#
+# German translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  content_moderation_info_block.tpl.php,v 1.6.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation_revisions_list.tpl.php,v 1.2.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.rules.inc,v 1.1.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.views.inc,v 1.6.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.workflow.inc,v 1.7.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation_handler_filter_state.inc,v 1.8.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.module,v 1.12.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.install,v 1.7.2.3 2010/01/31 09:32:38 eugenmayer
+#  content_moderation.info,v 1.2.2.1 2010/01/31 09:32:38 eugenmayer
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Content moderation\n"
-"POT-Creation-Date: 2010-01-14 20:49+0100\n"
-"PO-Revision-Date: \n"
+"Project-Id-Version: Drupal Content Moderation V6.x-1.0\n"
+"POT-Creation-Date: 2010-02-21 09:28+0100\n"
+"PO-Revision-Date: 2010-02-21 09:32+0100\n"
 "Last-Translator: Eugen Mayer <mayer@impressive-media.de>\n"
-"Language-Team: Eugen Mayer <impressive-media.de>\n"
+"Language-Team: Frank Tartler <frank.tartler@googlemail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: plurales=(n!=1);\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Poedit-Language: German\n"
-
-#: content_moderation_info_block.tpl.php:21
-msgid "Edit the state of this revision like review or approval"
-msgstr "Ändern Sie den Status dieser Version, z.B. auf \"Zur Überprung\""
-
-#: content_moderation_info_block.tpl.php:23
-msgid "Edit the moderation status of this revision"
-msgstr "Ändern Sie den Status dieser Version, z.B. auf \"Zur Überprung\""
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: content_moderation_info_block.tpl.php:25
-#, fuzzy
-msgid "View live revision"
-msgstr "Aller Versionen anzeigen"
+msgid "Edit the state of this revision (review, approve)."
+msgstr "Den Status dieser Version bearbeiten, z.B. Durchsicht oder Genehmigung."
 
-#: content_moderation_info_block.tpl.php:26
-#, fuzzy
-msgid "View this revision"
-msgstr "Diese Version löschen"
+#: content_moderation_info_block.tpl.php:27
+msgid "Edit the moderation status of this revision."
+msgstr "Moderations-Status dieser Version bearbeiten."
 
 #: content_moderation_info_block.tpl.php:29
-#: content_moderation_revisions_list.tpl.php:27
-msgid "Compare this revision with the live revision"
-msgstr "Die Version mit der Live-Version vergleichen"
+msgid "View live revision"
+msgstr "Live-Version anzeigen"
 
 #: content_moderation_info_block.tpl.php:30
-#: content_moderation_revisions_list.tpl.php:28
-msgid "List all revision"
-msgstr "Aller Versionen anzeigen"
+msgid "View this revision."
+msgstr "Diese Version anzeigen."
 
-#: content_moderation_info_block.tpl.php:37
+#: content_moderation_info_block.tpl.php:33
+msgid "Compare this revision with the live revision."
+msgstr "Diese Version mit der Live-Version vergleichen."
+
+#: content_moderation_info_block.tpl.php:34
+#: content_moderation_revisions_list.tpl.php:31
+msgid "List all revisions."
+msgstr "Alle Versionen anzeigen."
+
+#: content_moderation_info_block.tpl.php:41
 msgid "Live"
 msgstr "Live"
 
-#: content_moderation_info_block.tpl.php:42
+#: content_moderation_info_block.tpl.php:46
+#, fuzzy
 msgid "Viewing"
-msgstr "Betrachtend"
+msgstr "Wird angezeigt"
 
-#: content_moderation_info_block.tpl.php:50
+#: content_moderation_info_block.tpl.php:54
 msgid "Pending"
-msgstr "Vorbehalten"
-
-#: content_moderation_revisions_list.tpl.php:20
-msgid "View revision @rev"
-msgstr "Zeige version @rev an"
+msgstr "Anstehend"
 
 #: content_moderation_revisions_list.tpl.php:23
-#, fuzzy
-msgid "Change state of revision @rev"
-msgstr "Status der Version ändern"
+msgid "View revision @rev."
+msgstr "Version @rev anzeigen."
 
-#: content_moderation_revisions_list.tpl.php:36
-#, fuzzy
-msgid "None"
-msgstr "Beitrag"
+#: content_moderation_revisions_list.tpl.php:26
+msgid "Change state of revision @rev."
+msgstr "Status der Version @rev ändern."
 
-#: content_moderation.views.inc:5;6
-msgid "Node"
-msgstr "Beitrag"
+#: content_moderation_revisions_list.tpl.php:30
+msgid "Compare this revision with the current live revision."
+msgstr "Diese Version mit der aktuellen Live-Version vergleichen."
 
-#: content_moderation.views.inc:8
-msgid "NEW"
-msgstr "Neu"
+#: content_moderation_revisions_list.tpl.php:39
+#: content_moderation.module:99
+msgid "none"
+msgstr "ohne"
 
-#: content_moderation.views.inc:9
-msgid "The node ID of the node."
-msgstr "Die ID des Beitrags"
+#: content_moderation.rules.inc:16
+msgid "Node on which the transition was done"
+msgstr "Beitrag für den der Übergang durchgeführt wurde"
 
-#: content_moderation.views.inc:26
+#: content_moderation.views.inc:10
 msgid "Node Revision"
-msgstr "Die Version des Betrags"
+msgstr "Beitrags-Version"
 
-#: content_moderation.views.inc:36
-#: content_moderation_handler_filter_state.inc:26
-msgid "State"
-msgstr "Status"
+#: content_moderation.views.inc:20
+msgid "Workflow state"
+msgstr "Arbeitsablauf-Status"
 
-#: content_moderation.views.inc:37
-msgid "State of the node revisision"
-msgstr "Status der Version"
+#: content_moderation.views.inc:21
+msgid "Content moderation state of the node revisision"
+msgstr "Inhaltsmoderations-Status der Beitragsversion"
 
-#: content_moderation.views.inc:44
-msgid "Moderated_new"
-msgstr ""
-
-#: content_moderation.views.inc:45
-msgid "Whether or not the node is moderated."
-msgstr "Soll dieser Inhaltstyp moderiert werden (content moderation)"
-
-#: content_moderation.views.inc:53
-msgid "Moderated"
-msgstr "Moderiert"
-
-#: content_moderation.workflow.inc:35
+#: content_moderation.workflow.inc:39
 msgid "Changing state of revision"
-msgstr "Status der Version ändern"
+msgstr "Status der Version wird geändert"
 
-#: content_moderation.workflow.inc:40
+#: content_moderation.workflow.inc:44
 msgid "New state"
 msgstr "Neuer Status"
 
-#: content_moderation.workflow.inc:41
+#: content_moderation.workflow.inc:45
 msgid "Current state: @curstate"
 msgstr "Aktueller Status: @curstate"
 
-#: content_moderation.workflow.inc:42
+#: content_moderation.workflow.inc:46
 msgid "Choose the next workflow state this revision should be set to."
-msgstr "Wähle den nächsten Ablauf-Status für diese Version aus"
+msgstr "Den nächsten Arbeitsablauf-Status auswählen, auf den diese Version gesetzt werden soll."
 
-#: content_moderation.workflow.inc:48
+#: content_moderation.workflow.inc:52
 msgid "Comment"
 msgstr "Kommentar"
 
-#: content_moderation.workflow.inc:49
+#: content_moderation.workflow.inc:53
 msgid "If you wish, add an optional comment. This will be shown in the history"
-msgstr "Sie können einen Kommentar eingeben. Zum Beispiel wieso Sie den Status ändern."
+msgstr "Wenn geünscht kann einen optionaler Kommentar hinzugefügt werden. Dieser wird in der Historie angezeigt"
 
-#: content_moderation.workflow.inc:52
+#: content_moderation.workflow.inc:56
 msgid "Save"
 msgstr "Speichern"
 
-#: content_moderation.workflow.inc:55
+#: content_moderation.workflow.inc:59
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: content_moderation.workflow.inc:69
+#: content_moderation.workflow.inc:73
 msgid "You are not allowed to change to that state!"
-msgstr "Sie sind nicht berechtigt, den Status zu ändern!"
+msgstr "Keine Berechtigung, in diesen Status zu wechseln!"
 
-#: content_moderation.workflow.inc:96
+#: content_moderation.workflow.inc:95
+msgid "This revision !vid has now been published as the new live version."
+msgstr "Die Version !vid wurd nun als neue Live-Version veröffentlicht."
+
+#: content_moderation.workflow.inc:100
 msgid "The revisions state has been successfully updated to @state"
 msgstr "Der Status der Version wurde erfolgreich zu @state aktualisiert"
 
-#: content_moderation_handler_filter_state.inc:27
-msgid "Select a workflow state"
-msgstr "Wählen Sie einen Status"
+#: content_moderation.workflow.inc:232
+msgid "this content type (!type) is not under moderation"
+msgstr "Dieser Inhaltstyp (!type) wird zur Zeit nicht moderiert"
 
-#: content_moderation.module:77;313
+#: content_moderation_handler_filter_state.inc:28
+msgid "State"
+msgstr "Status"
+
+#: content_moderation_handler_filter_state.inc:29
+msgid "Select a workflow state (content moderation)."
+msgstr "Arbeitsablauf-Status auswählen (Inhaltsmoderation)."
+
+#: content_moderation.module:26
+msgid "Show the content moderation history."
+msgstr "Inhaltsmoderations-Verlauf anzeigen."
+
+#: content_moderation.module:52
+msgid "Content moderation info"
+msgstr ""
+
+#: content_moderation.module:82;318
 msgid "Revision"
 msgstr "Version"
 
-#: content_moderation.module:94
-msgid "none"
-msgstr "Kein"
+#: content_moderation.module:117
+msgid "Enables you to moderate the creation of nodes and there further editing. You can have a 'Live version' for all visitors and pending revisions which need to be approved and become the new 'Live Version' then."
+msgstr "Ermöglicht das Erstellen und spätere Bearbeiten von Beiträgen zu moderieren. Es gibt ‚Live-Versionen‘ für alle Besucher und anstehende Versionen, die genehmigt werden müssen und dann zur ‚Live-Version‘ werden."
 
-#: content_moderation.module:112
-msgid "Enables you to moderate the creation of nodes and there further editing. You can have 'Live version' for all visitors and pending revisions which need to be apoved and become the 'Live Version' then"
-msgstr "Dieses Module ermöglicht Ihnen, das erstellen und editieren von Beiträgen zu moderieren. Es wird dabei immer einen Live-Version eines Beitrags geben, während weitere Version auf die Freischaltung warten"
-
-#: content_moderation.module:156
+#: content_moderation.module:161
 msgid "Your content has been saved as a pending revision. Click !here to view your revision."
-msgstr "Der Inhalt wurde in einer vorbehaltenden Version gespeichert. Klicken Sie !here um Ihre Version anzuzeigen."
+msgstr "Der Inhalt wurde in einer anstehenden Version gespeichert. Die eigene Version kann angezeigt werden, wenn !here angeklickt wird."
 
-#: content_moderation.module:157;173
+#: content_moderation.module:162;178
 msgid "here"
 msgstr "hier"
 
-#: content_moderation.module:172
+#: content_moderation.module:177
 msgid "Your content has been saved as a pending version. Click !here to view the live version."
-msgstr "Der Inhalt wurde in einer vorbehaltenen Version gespeichert. Klicken Sie !here um die Live-Version anzuzeigen"
+msgstr "Der Inhalt wurde in einer anstehenden Version gespeichert. Bitte !here klicken um die Live-Version anzuzeigen."
 
-#: content_moderation.module:186
-msgid "You are currently viewing a revision of this node created on @date by !author."
-msgstr "Sie betrachten eine Version des Betrags, welche am @date von !author erstellt wurde."
+#: content_moderation.module:191
+msgid "The revision of this node has been created on @date by @author."
+msgstr "Diese Version des Beitrags wurde am @date von @author erstellt."
 
-#: content_moderation.module:199
+#: content_moderation.module:202
 msgid "This document has 1 pending revision"
-msgstr "Dieser Beitrag hat 1 vorbehaltene Version"
+msgstr "Dieser Beitrag hat 1 anstehende Version."
 
-#: content_moderation.module:201
+#: content_moderation.module:204
 msgid "This document has @count pending revisions"
-msgstr "Dieser Beitrag hat @count vorbehaltene Versionen"
+msgstr "Dieser Beitrag hat @count anstehende Versionen."
 
-#: content_moderation.module:249
-msgid "Initial revision - this node is still under moderation"
-msgstr "Initale Version in From eines Platzhalters. (Dieser Betrag hat bisher noch keine Live-Version)"
+#: content_moderation.module:252
+msgid "Initial revision - this node is under moderation and no revision has been set live yet."
+msgstr "Erste Version - Dieser Beitrag wird noch moderiert, es gibt noch keine Live-Version."
 
-#: content_moderation.module:250
-msgid "Auto-creating live version of the just created node"
-msgstr "Erstelle automatisch eine vorübergehende Live-Version des erstellten Beitrags."
+#: content_moderation.module:253
+msgid "Auto-creating live version as a template"
+msgstr "Automatisch Live-Version als Vorlage erstellen"
 
-#: content_moderation.module:257
+#: content_moderation.module:260
 msgid "Moderate revisions"
 msgstr "Versionen moderieren"
 
-#: content_moderation.module:272
-msgid "As this content is in moderation, you cannot choose here. A new revision is always created."
-msgstr "Da dieser Inhalt moderiert wird, können Sie hier nicht wählen. Es wird immer eine neue Version erstellt."
-
 #: content_moderation.module:275
-msgid "You cant choose here, as this content is under moderation. Publishing is forced."
-msgstr "Sie können hier nicht wählen, da dieser Inhalt moderiert wird. Der Inhalt wird immer veröffentlicht."
+msgid "As this content is in moderation, you cannot choose here. A new revision is always created."
+msgstr "Da dieser Inhalt moderiert wird, kann hier nicht gewählt werden. Es wird immer eine neue Version erstellt."
 
-#: content_moderation.module:310
+#: content_moderation.module:278
+msgid "You cant choose here, as this content is under moderation. Publishing is forced."
+msgstr "Hier ist keine Auswahl möglich, da dieser Inhalt moderiert wird. Veröffentlichung wird erzwungen."
+
+#: content_moderation.module:315
 msgid "Date"
 msgstr "Datum"
 
-#: content_moderation.module:311
+#: content_moderation.module:316
 msgid "Author"
 msgstr "Autor"
 
-#: content_moderation.module:312
+#: content_moderation.module:317
 msgid "Transition"
 msgstr "Übergang"
 
-#: content_moderation.module:336
-msgid "You are now editting the most recent pending revision (@revision) and not the live version!"
-msgstr "Sie editieren nun die aktuellste vorbehaltene Version (@revision) und nicht die Live-Version!"
+#: content_moderation.module:341
+msgid "You are now editing the most recent pending revision (@revision) and not the live version!"
+msgstr "Hiermit wird gerade die neueste anstehende Version (@revision) bearbeitet und nicht die Live-Version!"
 
-#: content_moderation.module:365
+#: content_moderation.module:370
 msgid "History"
 msgstr "Verlauf"
 
-#: content_moderation.module:11
-msgid "Change moderation state"
-msgstr "Den Status ändern"
+#: content_moderation.module:563
+msgid "State of node type @type changed from '@from_state' to '@to_state'"
+msgstr "Status des Inhaltstyps @type wurde von ‚@from‘ in ‚@to_state‘ geändert."
 
-#: content_moderation.module:19
+#: content_moderation.module:17
+msgid "Change moderation state"
+msgstr "Moderations-Status ändern"
+
+#: content_moderation.module:25
 msgid "Moderation history"
 msgstr "Moderationsverlauf"
 
-#: content_moderation.module:20
-msgid "Show the content moderation history"
-msgstr "Zeige den Verlauf an"
-
-#: content_moderation.install:18
+#: content_moderation.install:23
 msgid "Saves the current live vid of a node"
-msgstr "Speichert die Live-Version eines Beitrags"
+msgstr "Speichert die aktuelle Live-Version eines Beitrags"
 
-#: content_moderation.install:28
+#: content_moderation.install:33
 msgid "Defines all possible states"
-msgstr "Definiere alle möglichen Stati"
+msgstr "Definiert alle möglichen Stati"
 
-#: content_moderation.install:50
+#: content_moderation.install:55
 msgid "Defines the valid transitions for states"
-msgstr "Definiert alle erlaubten Übergange der Stati"
+msgstr "Definiert alle erlaubten Übergange für Stati"
 
 #: content_moderation.info:0
 msgid "Content Moderation"
-msgstr ""
+msgstr "Inhaltsmoderation"
 
 #: content_moderation.info:0
 msgid "Content Moderation (by Impressive.media)"
-msgstr ""
+msgstr "Inhaltsmoderation (von Impressive.media)"
 
 #: content_moderation.info:0
-msgid "Impressive.media"
+msgid "Drupal Wiki"
 msgstr ""
+
+#~ msgid "None"
+#~ msgstr "Ohne"
 
