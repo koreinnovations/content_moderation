@@ -100,10 +100,10 @@ function content_moderation_change_state_form_submit($form, &$form_state) {
   drupal_set_message(t('The revisions state has been successfully updated to @state',array('@state' => $nextstate)));
 
   if($nextstate == 'live') {
-   drupal_goto(url('node/'.$node->nid));
+   drupal_goto('node/'.$node->nid));
   }
   else {
-    drupal_goto(url("node/{$node->nid}/revisions/{$node->vid}/view"));
+    drupal_goto("node/{$node->nid}/revisions/{$node->vid}/view");
   }
 }
 
