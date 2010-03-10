@@ -158,9 +158,15 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       // we need to restore the live version pointer, as node_save has been called
       // and it is automatically updating it
       db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
-      drupal_set_message(t("Your content has been saved as a pending revision. Click !here to view your revision.", array(
-        '!here'=>l(t('here'), "node/$node->nid/revisions/".$node->vid.'/view')
-      )), 'warning');
+      drupal_set_message(
+        t(
+          "Your content has been saved as a pending revision. Click !here to view your revision.",
+          array(
+            '!here'=>l(t('here'), "node/$node->nid/revisions/".$node->vid.'/view')
+          )
+        ),
+        'warning'
+      );
       break;
     case 'update':
       // This update api call was triggered by a node_save done in 'insert' of a creation
@@ -174,9 +180,15 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       else {
         // Force the live revision back to saved live -version.
         db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
-        drupal_set_message(t("Your content has been saved as a pending version. Click !here to view the live version.", array(
-        '!here'=>l(t('here'), "node/".$node->nid)
-        )), 'warning');
+        drupal_set_message(
+          t(
+            'Your content has been saved as a pending version. Click !here to view the live version.',
+            array(
+              '!here'=>l(t('here'), "node/".$node->nid)
+            )
+          ),
+          'warning'
+        );
       }
 
       break;
@@ -188,10 +200,10 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         // Get username for the revision rather than the original node.
         $revision_author = user_load($node->revision_uid);
         drupal_set_message(
-          t('The revision of this node has been created on @date by @author.',
+          t('The revision of this node has been created on @date by !author.',
             array(
              '@date'=> format_date($node->revision_timestamp, 'small'),
-             '@author'=> theme('username', $revision_author)
+             '!author'=> theme('username', $revision_author)
             )
           )
         );
@@ -225,9 +237,10 @@ function content_moderation_perm() {
         // values are translated
         $to_states = array_keys($to_states);
         foreach($to_states as $to_state) {
-          $rigths[] = "content moderation $type state '$from_state' to '$to_state'";
+          $rigths[] = "content moderation $type state $from_state to $to_state";
         }
     }
+    $rights[] = "content moderation view $type moderation history";
   }
 
   return $rigths;
@@ -487,7 +500,7 @@ function _content_moderation_access($op,$node) {
   //else the default
   switch($op) {
     case 'view history':
-      return node_access('view',$node);
+      return user_access("content moderation view {$node->type} moderation history",$account);
     break;
   }
 }

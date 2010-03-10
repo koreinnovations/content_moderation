@@ -52,7 +52,6 @@ if(module_exists('diff')){
 
   <?php if($revisions_list != "") { ?>
   <h4><?php print t('Pending')?></h4>
-  nk you! Your patch will be included in the next release<?php
-      echo $revisions_list;
+   <?php echo $revisions_list;
    } ?>
 </div>
