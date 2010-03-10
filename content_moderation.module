@@ -240,7 +240,7 @@ function content_moderation_perm() {
           $rigths[] = "content moderation $type state $from_state to $to_state";
         }
     }
-    $rights[] = "content moderation view $type moderation history";
+    $rigths[] = "content moderation view $type moderation history";
   }
 
   return $rigths;
