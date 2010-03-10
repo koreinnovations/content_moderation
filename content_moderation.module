@@ -472,7 +472,7 @@ function _content_moderation_change_state_link($vid,$nid) {
  * checking the transition and node type.
  */
 function _content_moderation_state_allowed($user,$from_state,$to_state,$node_type) {
-  return user_access("content moderation $node_type state '$from_state' to '$to_state'");
+  return user_access("content moderation $node_type state $from_state to $to_state");
 }
 
 /*
