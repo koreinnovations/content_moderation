@@ -1,24 +1,24 @@
 # $Id$
 #
-# German translation of Drupal (general)
+# LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  content_moderation_info_block.tpl.php,v 1.6.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation_revisions_list.tpl.php,v 1.2.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.rules.inc,v 1.1.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.views.inc,v 1.6.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.workflow.inc,v 1.7.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation_handler_filter_state.inc,v 1.8.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.module,v 1.12.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.install,v 1.7.2.3 2010/01/31 09:32:38 eugenmayer
-#  content_moderation.info,v 1.2.2.1 2010/01/31 09:32:38 eugenmayer
+#  content_moderation_info_block.tpl.php,v 1.6.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation_revisions_list.tpl.php,v 1.2.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.module,v 1.12.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.rules.inc,v 1.1.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.views.inc,v 1.6.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.workflow.inc,v 1.7.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation_handler_filter_state.inc,v 1.8.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.install,v 1.7.2.12 2010/03/10 13:25:08 eugenmayer
+#  content_moderation.info,v 1.2.2.10 2010/03/10 13:25:08 eugenmayer
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Drupal Content Moderation V6.x-1.0\n"
-"POT-Creation-Date: 2010-02-21 09:28+0100\n"
-"PO-Revision-Date: 2010-02-21 09:32+0100\n"
-"Last-Translator: Eugen Mayer <mayer@impressive-media.de>\n"
+"Project-Id-Version: Drupal Content Moderation V6.x-1.1\n"
+"POT-Creation-Date: 2010-03-12 15:39+0100\n"
+"PO-Revision-Date: 2010-03-12 15:41+0100\n"
+"Last-Translator: Frank Tartler <frank.tartler@googlemail.com>\n"
 "Language-Team: Frank Tartler <frank.tartler@googlemail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -163,7 +163,7 @@ msgstr "Inhaltsmoderations-Verlauf anzeigen."
 msgid "Content moderation info"
 msgstr ""
 
-#: content_moderation.module:82;318
+#: content_moderation.module:82;331
 msgid "Revision"
 msgstr "Version"
 
@@ -171,71 +171,71 @@ msgstr "Version"
 msgid "Enables you to moderate the creation of nodes and there further editing. You can have a 'Live version' for all visitors and pending revisions which need to be approved and become the new 'Live Version' then."
 msgstr "Ermöglicht das Erstellen und spätere Bearbeiten von Beiträgen zu moderieren. Es gibt ‚Live-Versionen‘ für alle Besucher und anstehende Versionen, die genehmigt werden müssen und dann zur ‚Live-Version‘ werden."
 
-#: content_moderation.module:161
+#: content_moderation.module:162
 msgid "Your content has been saved as a pending revision. Click !here to view your revision."
 msgstr "Der Inhalt wurde in einer anstehenden Version gespeichert. Die eigene Version kann angezeigt werden, wenn !here angeklickt wird."
 
-#: content_moderation.module:162;178
+#: content_moderation.module:165;187
 msgid "here"
 msgstr "hier"
 
-#: content_moderation.module:177
+#: content_moderation.module:184
 msgid "Your content has been saved as a pending version. Click !here to view the live version."
 msgstr "Der Inhalt wurde in einer anstehenden Version gespeichert. Bitte !here klicken um die Live-Version anzuzeigen."
 
-#: content_moderation.module:191
-msgid "The revision of this node has been created on @date by @author."
-msgstr "Diese Version des Beitrags wurde am @date von @author erstellt."
+#: content_moderation.module:203
+msgid "The revision of this node has been created on @date by !author."
+msgstr "Diese Version des Beitrags wurde am @date von !author erstellt."
 
-#: content_moderation.module:202
+#: content_moderation.module:214
 msgid "This document has 1 pending revision"
 msgstr "Dieser Beitrag hat 1 anstehende Version."
 
-#: content_moderation.module:204
+#: content_moderation.module:216
 msgid "This document has @count pending revisions"
 msgstr "Dieser Beitrag hat @count anstehende Versionen."
 
-#: content_moderation.module:252
+#: content_moderation.module:265
 msgid "Initial revision - this node is under moderation and no revision has been set live yet."
 msgstr "Erste Version - Dieser Beitrag wird noch moderiert, es gibt noch keine Live-Version."
 
-#: content_moderation.module:253
+#: content_moderation.module:266
 msgid "Auto-creating live version as a template"
 msgstr "Automatisch Live-Version als Vorlage erstellen"
 
-#: content_moderation.module:260
+#: content_moderation.module:273
 msgid "Moderate revisions"
 msgstr "Versionen moderieren"
 
-#: content_moderation.module:275
+#: content_moderation.module:288
 msgid "As this content is in moderation, you cannot choose here. A new revision is always created."
 msgstr "Da dieser Inhalt moderiert wird, kann hier nicht gewählt werden. Es wird immer eine neue Version erstellt."
 
-#: content_moderation.module:278
+#: content_moderation.module:291
 msgid "You cant choose here, as this content is under moderation. Publishing is forced."
 msgstr "Hier ist keine Auswahl möglich, da dieser Inhalt moderiert wird. Veröffentlichung wird erzwungen."
 
-#: content_moderation.module:315
+#: content_moderation.module:328
 msgid "Date"
 msgstr "Datum"
 
-#: content_moderation.module:316
+#: content_moderation.module:329
 msgid "Author"
 msgstr "Autor"
 
-#: content_moderation.module:317
+#: content_moderation.module:330
 msgid "Transition"
 msgstr "Übergang"
 
-#: content_moderation.module:341
+#: content_moderation.module:354
 msgid "You are now editing the most recent pending revision (@revision) and not the live version!"
 msgstr "Hiermit wird gerade die neueste anstehende Version (@revision) bearbeitet und nicht die Live-Version!"
 
-#: content_moderation.module:370
+#: content_moderation.module:383
 msgid "History"
 msgstr "Verlauf"
 
-#: content_moderation.module:563
+#: content_moderation.module:576
 msgid "State of node type @type changed from '@from_state' to '@to_state'"
 msgstr "Status des Inhaltstyps @type wurde von ‚@from‘ in ‚@to_state‘ geändert."
 
@@ -270,7 +270,4 @@ msgstr "Inhaltsmoderation (von Impressive.media)"
 #: content_moderation.info:0
 msgid "Drupal Wiki"
 msgstr ""
-
-#~ msgid "None"
-#~ msgstr "Ohne"
 

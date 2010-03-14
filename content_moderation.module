@@ -492,6 +492,8 @@ function _content_moderation_state_allowed($user,$from_state,$to_state,$node_typ
  */
 function _content_moderation_access($op,$node) {
   $access_methods = module_invoke_all('content_moderation_access',$op);
+  // If some module has registered his own access method, call only the first one.
+  // TODO: We could also call every method and then combine them by "AND" or "OR".
   if(count($access_methods) > 0) {
     if(function_exists($access_methods[0])) {
       return $access_methods[0]($node);
@@ -500,7 +502,7 @@ function _content_moderation_access($op,$node) {
   //else the default
   switch($op) {
     case 'view history':
-      return user_access("content moderation view {$node->type} moderation history",$account);
+      return _content_moderation_moderate_node_type($node->type) && user_access("content moderation view {$node->type} moderation history",$account);
     break;
   }
 }
