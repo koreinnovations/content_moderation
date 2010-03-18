@@ -17,7 +17,7 @@ function content_moderation_views_data() {
   );
 
   $data['content_moderation_revision_state']['state'] = array(
-    'title' => t('Workflow state'),
+    'title' => t('Content Moderation state'),
     'help' => t('Content moderation state of the node revisision'),
     'filter' => array(
       'handler' => 'content_moderation_handler_filter_state',

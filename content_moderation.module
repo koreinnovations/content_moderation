@@ -147,6 +147,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       else {
         $live = _content_moderation_live_revision($node->nid);
         $node->live_vid = $live->vid;
+        $node->live_changed = $live->changed;
       }
       break;
     case 'insert':
@@ -179,7 +180,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       }
       else {
         // Force the live revision back to saved live -version.
-        db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $node->live_vid, $node->nid);
+        db_query("UPDATE {node} SET vid = %d, changed='%s' WHERE nid = %d", $node->live_vid, $node->live_changed, $node->nid);
         drupal_set_message(
           t(
             'Your content has been saved as a pending version. Click !here to view the live version.',
@@ -420,6 +421,8 @@ function _content_moderation_create_pending_revision(&$node) {
  */
 function _content_moderation_live_revision($nid) {
   //TODO: this can be costy
+  $node = node_load($nid);
+  $node->changed = db_result(db_query("SELECT timestamp from {node_revisions} WHERE vid=%d", $node->vid));
   return node_load($nid);
 }
 

@@ -91,6 +91,11 @@ function _content_moderation_insert_values() {
   db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","none","all")');
 }
 
+function content_moderation_update_6001() {
+  db_query('update node INNER JOIN node_revisions nr ON node.vid = nr.vid set node.changed = nr.timestamp');
+  return array();
+}
+
 /**
  * Implementation of hook_uninstall().
  */
