@@ -63,6 +63,7 @@ function content_moderation_schema() {
   return $schema;
 }
 
+
 function _content_moderation_insert_values() {
   $states = array(
     array(
@@ -93,6 +94,11 @@ function _content_moderation_insert_values() {
 
 function content_moderation_update_6001() {
   db_query('update node INNER JOIN node_revisions nr ON node.vid = nr.vid set node.changed = nr.timestamp');
+  return array();
+}
+
+function content_moderation_update_6003() {
+  db_query("ALTER TABLE `content_moderation_states` ADD `weight` SMALLINT NOT NULL DEFAULT '0'");
   return array();
 }
 

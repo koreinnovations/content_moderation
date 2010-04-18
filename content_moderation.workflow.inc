@@ -108,7 +108,7 @@ function content_moderation_change_state_form_submit($form, &$form_state) {
 }
 
 /*
- * Update internal live-version entry.
+ * Update state.
  */
 function _content_moderation_update_revision_state($vid,$nid,$state) {
   $revison_state = array(
@@ -130,13 +130,15 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
  * Make the given vid the new live version.
  */
 function _content_moderation_set_live($vid,$nid) {
+  $revision = _content_moderation_revision_infos($vid);
   // Save the vid in the node table.
-  db_query('UPDATE {node} SET vid = %d WHERE nid = %d', $vid, $nid);
+  db_query('UPDATE {node} SET vid = %d, status = 1, changed="%s" WHERE nid = %d', $vid, $revision->timestamp, $nid);
+
   // Reset all current states of revisisions of this node, which are live
   // as we can have more then one live revision.
   // We are not resetting the history though, because it should be visible
   // which node has been live, approved by who and so forth.
-  db_query('UPDATE {content_moderation_revision_state} SET state = "none" WHERE nid = %d AND state="live"', $nid);
+  db_query('UPDATE {content_moderation_revision_state} SET state = "none" WHERE nid = %d AND vid<>%d AND state="live"', $nid,$vid);
 }
 
 /*
@@ -231,6 +233,15 @@ function _content_moderation_statechange_allowed($vid,$state = NULL) {
   if(!_content_moderation_moderate_node_type($node->type)) {
     drupal_set_message(t('this content type (!type) is not under moderation', array('!type' => $node->type)),'error');
     return false;
+  }
+
+  if(variable_get('content_moderation_moderate_latest_only', 1) === 1) {
+    $revisions = _content_moderation_get_latest_revisions($nid,1);
+    // Do not allow state changing of revisions, which are not the latest
+
+    if(!is_array($revisions) || $revisions[0]->vid != $vid) {
+      return false;
+    }
   }
 
   // User must have write access to do anything state related

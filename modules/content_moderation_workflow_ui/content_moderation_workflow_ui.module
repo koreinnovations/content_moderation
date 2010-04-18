@@ -1,0 +1,201 @@
+<?php
+
+
+/*
+ * Implementation of hook_menu().
+ */
+function content_moderation_workflow_ui_menu() {
+  $items = array();
+  $items['admin/settings/content_moderation/states'] = array(
+    'title' => 'States',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('content_moderation_workflow_ui_admin_settings_states'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/settings/content_moderation/transitions'] = array(
+    'title' => 'Transitions',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('content_moderation_workflow_ui_admin_settings_transitions'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+/**
+ * Form builder function for module settings.
+ * Defining states
+ */
+function content_moderation_workflow_ui_admin_settings_states() {
+
+  $form['content_moderation_states'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content moderation states'),
+    '#description' => 'Use to define new states or to delete existing ones. States have to be defined before corresponding transitions can be set up.'
+  );
+  $form['content_moderation_states']['new'] = array (
+    '#type' => 'fieldset',
+    '#title' => 'Create new',
+  );
+  $form['content_moderation_states']['new']['new_state_name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Create new state',
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('Enter name of new state.')
+  );
+
+  $form['content_moderation_states']['new']['new_state_desc'] = array(
+    '#type' => 'textarea',
+    '#description' => 'Enter an optional description of new state.'
+  );
+
+  $form['content_moderation_states']['new']['submit_states'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create')
+  );
+ $form['content_moderation_states']['del'] = array (
+    '#type' => 'fieldset',
+    '#title' => 'Delete state',
+  );
+  $form['content_moderation_states']['del'] ['delete_states'] = array(
+    '#type' => 'checkboxes',
+    '#title' => 'Delete existing states',
+    '#default_value' => array(),
+    '#options' => _content_moderation_workflow_ui_admin_states(),
+    '#description' => 'Select all states you want to delete <br> Please note: when deleting an existing state all transitions involving this state will also be deleted.'
+  );
+    $form['content_moderation_states']['del']['submit_states'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete')
+  );
+
+  return $form;
+}
+
+
+/**
+ * Form builder function for module settings.
+ * Defining transitions
+ */
+function content_moderation_workflow_ui_admin_settings_transitions() {
+  $form['content_moderation_transitions'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Content moderation transitions',
+    '#description' => 'Use to define new transitions or to delete existing ones. Transitions may be set up with existing states only.'
+  );
+
+  $form['content_moderation_transitions']['new'] = array (
+    '#type' => 'fieldset',
+    '#title' => 'Create new',
+  );
+
+  $form['content_moderation_transitions']['new']['new_transition_from'] = array(
+    '#type' => 'select',
+    '#title' => 'New transition from',
+    '#default_value' => array(),
+    '#options' => array_merge(array(0 => t('Choose a state')),_content_moderation_workflow_ui_admin_states()),
+  );
+
+  $form['content_moderation_transitions']['new']['new_transition_to'] = array(
+    '#type' => 'select',
+    '#title' => 'to',
+    '#default_value' => array(),
+    '#options' => array_merge(array(0 => t('Choose a state')),_content_moderation_workflow_ui_admin_states()),
+  );
+
+  $form['content_moderation_transitions']['new']['submit_transitions'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create')
+  );
+
+    $form['content_moderation_transitions']['del'] = array (
+    '#type' => 'fieldset',
+    '#title' => 'Delete transitions',
+  );
+  $form['content_moderation_transitions']['del']['delete_transitions'] = array(
+    '#type' => 'checkboxes',
+    '#title' => 'Delete existing transitions',
+    '#default_value' => array(),
+    '#options' => _content_moderation_workflow_ui_admin_transitions(),
+    '#description' => t('Select all states you want to delete <br> Please note: deleting an existing transition will not have any impact on states involved.')
+  );
+  $form['content_moderation_transitions']['del']['delete'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete')
+  );
+
+
+  return $form;
+}
+
+/*
+ * Get all states possible
+ */
+function _content_moderation_workflow_ui_admin_states() {
+  $result = db_query('select * from {content_moderation_states}');
+  //TODO: cache this
+  $states = array();
+  while ($state = db_fetch_object($result)) {
+    $states[$state->name] = $state->descr ? $state->descr : $state->name;
+  }
+  return $states;
+}
+
+/*
+ * Get all transitions possible
+ */
+function _content_moderation_workflow_ui_admin_transitions() {
+  $result = db_query('select * from {content_moderation_transition}');
+  //TODO: cache this
+  $transitions = array();
+  while ($transition = db_fetch_object($result)) {
+    $transinfo = $transition->from_name.'---'.$transition->to_name;
+    $transitions[$transinfo] = $transition->from_name . ' -> ' . $transition->to_name;
+  }
+  return $transitions;
+}
+
+function content_moderation_workflow_ui_admin_settings_states_submit($form, &$form_state)
+{
+  $form_values = $form_state['values'];
+  foreach ( $form_values['delete_states'] AS $state => $action ) {
+    if ( is_string($action) ) {
+      $q = ' DELETE FROM {content_moderation_states} WHERE name = "%s" ';
+      $r = db_query($q, array($state));
+      $q = ' DELETE FROM {content_moderation_transition} WHERE from_name = "%s" OR from_name = "%s" ';
+      $r = db_query($q, array($state, $state));
+    }
+  }
+  if ( isset($form_values['new_state_name']) && strlen($form_values['new_state_name']) > 0 ) {
+    $new_state = (object) null;
+    $new_state->name = $form_values['new_state_name'];
+    if ( isset($form_values['new_state_desc']) && strlen($form_values['new_state_desc']) > 0 ) {
+      $new_state->desc = $form_values['new_state_desc'];
+    }
+    drupal_write_record('content_moderation_states', $new_state);
+  }
+  drupal_set_message(t('Your settings have been saved.'));
+}
+
+function content_moderation_workflow_ui_admin_settings_transitions_submit($form, &$form_state)
+{
+  $form_values = $form_state['values'];
+  foreach ( $form_values['delete_transitions'] AS $transition => $action ) {
+    if ( is_string($action) ) {
+      $transinfo = explode('---', $transition);
+      $q = ' DELETE FROM {content_moderation_transition} WHERE from_name = "%s" AND to_name = "%s" ';
+      $r = db_query($q, array($transinfo[0], $transinfo[1]));
+    }
+  }
+  if ( $form_values['new_transition_from'] != '0' && $form_values['new_transition_to'] != '0' ) {
+    $new_transition = (object) null;
+    $new_transition->from_name = $form_values['new_transition_from'];
+    $new_transition->to_name = $form_values['new_transition_to'];
+    $new_transition->ntype = 'all';
+    drupal_write_record('content_moderation_transition', $new_transition);
+  }
+  drupal_set_message(t('Your settings have been saved.'));
+}

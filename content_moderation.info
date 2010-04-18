@@ -2,5 +2,5 @@
 project = "content_moderation"
 core = "6.x"
 name = Content Moderation
-description = Content Moderation (by Impressive.media)
+description = Content Moderation
 package = "Drupal Wiki"
