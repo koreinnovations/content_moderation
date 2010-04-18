@@ -1,0 +1,102 @@
+@CHARSET "UTF-8";
+#content_moderation .edit_state,#content_moderation .current_state
+{
+  display:inline;
+}
+
+#content_moderation .info label
+{
+  font-weight:bolder;
+}
+
+#content_moderation .info .details
+{
+  color:grey;
+  font-size:.8em;
+  line-height:.9em;
+  margin:0 0 0 3px;
+}
+
+#content_moderation .info .state
+{
+  display:block;
+  color:grey;
+  line-height:.8em;
+  font-size:.8em;
+}
+
+#content_moderation .info {
+  -moz-background-clip:border;
+  -moz-background-inline-policy:continuous;
+  -moz-background-origin:padding;
+  background:#F8F8F8 none repeat scroll 0 0;
+  color:#666666;
+  font-size:91.7%;
+  margin-bottom:0.5em;
+  padding:0px 10px 10px 10px;
+}
+
+#content_moderation .live_info a
+{
+  font-weight:400;
+  margin:0 0 5px;
+}
+
+#content_moderation .live_info
+{
+  margin:0 0 8px;
+}
+
+#content_moderation .edit_state a,#content_moderation .info a
+{
+  color:#0D85D0;
+  font-weight:bolder;
+}
+
+#content_moderation .revision
+{
+  display:block;
+}
+
+.tinyicon
+{
+  position:relative;
+  top:4px;
+  display:inline-block;
+  height:18px;
+  width:16px;
+  background-repeat:no-repeat;
+  padding:0 2px;
+}
+
+.t_editicon
+{
+  background-image:url(images/icons/tiny/edit.png);
+}
+.t_revisionicon
+{
+  background-image:url(images/icons/tiny/revisions.png);
+}
+
+.t_changestateicon
+{
+  background-image:url(images/icons/tiny/next.png);
+}
+
+.t_deleteicon
+{
+  background-image:url(images/icons/tiny/delete.png);
+}
+
+.t_viewicon
+{
+  background-image:url(images/icons/tiny/view.png);
+}
+
+#content_moderation h4
+{
+  text-decoration:underline;
+  font-size:1.1em;
+  line-height:1.3em;
+  margin:13px 0 2px;
+}
