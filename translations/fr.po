@@ -1,0 +1,243 @@
+
+msgid ""
+msgstr ""
+
+#: content_moderation_info_block.tpl.php:25
+msgid "Edit the state of this revision (review, approve)."
+msgstr "Modifier l'état de cette révision (révision, approbation)."
+
+#: content_moderation_info_block.tpl.php:27
+msgid "Edit the moderation status of this revision."
+msgstr "Modifier l'état de la modération de cette révision."
+
+#: content_moderation_info_block.tpl.php:29
+msgid "View live revision"
+msgstr "Voir la revision actuel"
+
+#: content_moderation_info_block.tpl.php:30
+msgid "View this revision."
+msgstr "Voir cette révision."
+
+#: content_moderation_info_block.tpl.php:33
+msgid "Compare this revision with the live revision."
+msgstr "Comparer cette révision à la révision actuel."
+
+#: content_moderation_info_block.tpl.php:34 content_moderation_revisions_list.tpl.php:31
+msgid "List all revisions."
+msgstr "Afficher toutes les révisions."
+
+#: content_moderation_info_block.tpl.php:41
+msgid "Live"
+msgstr "Actuel"
+
+#: content_moderation_info_block.tpl.php:46
+msgid "Viewing"
+msgstr "Visible"
+
+#: content_moderation_info_block.tpl.php:54
+msgid "Pending"
+msgstr "En attente"
+
+#: content_moderation_revisions_list.tpl.php:23
+msgid "View revision @rev."
+msgstr "Voir la revision @ rev."
+
+#: content_moderation_revisions_list.tpl.php:26
+msgid "Change state of revision @rev."
+msgstr "Changement d'état de la révision @ rev."
+
+#: content_moderation_revisions_list.tpl.php:30
+msgid "Compare this revision with the current live revision."
+msgstr "Comparer cette révision à la révision visible en cours."
+
+#: content_moderation_revisions_list.tpl.php:39 content_moderation.module:99
+msgid "none"
+msgstr "aucun"
+
+#: content_moderation.rules.inc:16
+msgid "Node on which the transition was done"
+msgstr "Nœud sur lequel la transition a été fait"
+
+#: content_moderation.views.inc:10
+msgid "Node Revision"
+msgstr "Noeud de révision"
+
+#: content_moderation.views.inc:20
+msgid "Workflow state"
+msgstr "Etat Workflow"
+
+#: content_moderation.views.inc:21
+msgid "Content moderation state of the node revisision"
+msgstr "Contenu de l'état de modération revisision noeud"
+
+#: content_moderation.workflow.inc:39
+msgid "Changing state of revision"
+msgstr "Changement d'état de la révision"
+
+#: content_moderation.workflow.inc:44
+msgid "New state"
+msgstr "Nouveau état"
+
+#: content_moderation.workflow.inc:45
+msgid "Current state: @curstate"
+msgstr "État actuel: @ curstate"
+
+#: content_moderation.workflow.inc:46
+msgid "Choose the next workflow state this revision should be set to."
+msgstr "Choisissez l'état du workflow Suivant cette révision devrait être définie."
+
+#: content_moderation.workflow.inc:52
+msgid "Comment"
+msgstr "Commentaire"
+
+#: content_moderation.workflow.inc:53
+msgid "If you wish, add an optional comment. This will be shown in the history"
+msgstr "Si vous le souhaitez, ajouter un commentaire optionnel. Ce texte sera présenté dans l'historique"
+
+#: content_moderation.workflow.inc:56
+msgid "Save"
+msgstr "Sauver"
+
+#: content_moderation.workflow.inc:59
+msgid "Cancel"
+msgstr "Annuler"
+
+#: content_moderation.workflow.inc:73
+msgid "You are not allowed to change to that state!"
+msgstr "Vous n'êtes pas autorisé à changer à cet état!"
+
+#: content_moderation.workflow.inc:95
+msgid "This revision !vid has now been published as the new live version."
+msgstr "Cette révision !vid a maintenant été publiés dans la version visible."
+
+#: content_moderation.workflow.inc:100
+msgid "The revisions state has been successfully updated to @state"
+msgstr "L'état des révisions a été mis à jour vers @state"
+
+#: content_moderation.workflow.inc:232
+msgid "this content type (!type) is not under moderation"
+msgstr "ce type de contenu (!type) n'est pas sous modération"
+
+#: content_moderation_handler_filter_state.inc:28
+msgid "State"
+msgstr "État"
+
+#: content_moderation_handler_filter_state.inc:29
+msgid "Select a workflow state (content moderation)."
+msgstr "Sélectionnez un état de workflow (modération de contenu)."
+
+#: content_moderation.module:26
+msgid "Show the content moderation history."
+msgstr "Afficher l'historique de modération de contenu."
+
+#: content_moderation.module:52
+msgid "Content moderation info"
+msgstr "Contenu de modération d'infos"
+
+#: content_moderation.module:82;318
+msgid "Revision"
+msgstr "Revision"
+
+#: content_moderation.module:117
+msgid "Enables you to moderate the creation of nodes and there further editing. You can have a 'Live version' for all visitors and pending revisions which need to be approved and become the new 'Live Version' then."
+msgstr "Vous permet de modérer la création de nœuds et d'éventuel modification. Vous pouvez avoir une version visible pour tous les visiteurs et en attendant les révisions qui ont besoin d'être approuvé et devenir alors la nouvelle version visible."
+
+#: content_moderation.module:161
+msgid "Your content has been saved as a pending revision. Click !here to view your revision."
+msgstr "Votre contenu a été enregistré comme une révision en attente. Cliquez !ici pour voir votre révision."
+
+#: content_moderation.module:162;178
+msgid "here"
+msgstr "ici"
+
+#: content_moderation.module:177
+msgid "Your content has been saved as a pending version. Click !here to view the live version."
+msgstr "Votre contenu a été enregistré en tant que version en attente. Cliquez !ici pour voir la version visible."
+
+#: content_moderation.module:191
+msgid "The revision of this node has been created on @date by @author."
+msgstr "La révision de ce nœud a été créée le @date par  @author."
+
+#: content_moderation.module:202
+msgid "This document has 1 pending revision"
+msgstr "Ce document a une révision en attente"
+
+#: content_moderation.module:204
+msgid "This document has @count pending revisions"
+msgstr "Ce document a @count révision en attente"
+
+#: content_moderation.module:252
+msgid "Initial revision - this node is under moderation and no revision has been set live yet."
+msgstr "Révision initiale - ce nœud est en cours de modération et aucune révision n'a été mis visible pour le moment."
+
+#: content_moderation.module:253
+msgid "Auto-creating live version as a template"
+msgstr "Auto-création de version visible en tant que modèle"
+
+#: content_moderation.module:260
+msgid "Moderate revisions"
+msgstr "Modérer les révisions"
+
+#: content_moderation.module:275
+msgid "As this content is in moderation, you cannot choose here. A new revision is always created."
+msgstr "Comme ce contenu est en cours de modération, vous ne pouvez pas le choisir. Une nouvelle révision est toujours créé."
+
+#: content_moderation.module:278
+msgid "You cant choose here, as this content is under moderation. Publishing is forced."
+msgstr "Tu ne peux pas choisir ici, ce contenu est en cours de modération. Il doit être publié."
+
+#: content_moderation.module:315
+msgid "Date"
+msgstr "Date"
+
+#: content_moderation.module:316
+msgid "Author"
+msgstr "Auteur"
+
+#: content_moderation.module:317
+msgid "Transition"
+msgstr "Transition"
+
+#: content_moderation.module:341
+msgid "You are now editing the most recent pending revision (@revision) and not the live version!"
+msgstr "Vous éditez maintenant la révision la plus récente  (@revision) et pas la version vésible !"
+
+#: content_moderation.module:370
+msgid "History"
+msgstr "Historique"
+
+#: content_moderation.module:563
+msgid "State of node type @type changed from '@from_state' to '@to_state'"
+msgstr "État du noeud de type @type achangé de '@from_state' vers '@to_state'"
+
+#: content_moderation.module:17
+msgid "Change moderation state"
+msgstr "Changer l'état de la modération"
+
+#: content_moderation.module:25
+msgid "Moderation history"
+msgstr "Historique des modération"
+
+#: content_moderation.install:23
+msgid "Saves the current live vid of a node"
+msgstr "Enregistrer le vid courant du noued visible"
+
+#: content_moderation.install:33
+msgid "Defines all possible states"
+msgstr "Définit tous les états possibles"
+
+#: content_moderation.install:55
+msgid "Defines the valid transitions for states"
+msgstr "Définit les transitions valable pour les Etats"
+
+#: content_moderation.info:0
+msgid "Content Moderation"
+msgstr "Modération de contenu"
+
+#: content_moderation.info:0
+msgid "Content Moderation (by Impressive.media)"
+msgstr "La modération du contenu (par Impressive.media)"
+
+#: content_moderation.info:0
+msgid "Drupal Wiki"
+msgstr "Drupal Wiki"
