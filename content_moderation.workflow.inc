@@ -132,13 +132,13 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
 function _content_moderation_set_live($vid,$nid) {
   $revision = _content_moderation_revision_infos($vid);
   // Save the vid in the node table.
-  db_query('UPDATE {node} SET vid = %d, status = 1, changed="%s" WHERE nid = %d', $vid, $revision->timestamp, $nid);
+  db_query("UPDATE {node} SET vid = %d, status = 1, changed='%s' WHERE nid = %d", $vid, $revision->timestamp, $nid);
 
   // Reset all current states of revisisions of this node, which are live
   // as we can have more then one live revision.
   // We are not resetting the history though, because it should be visible
   // which node has been live, approved by who and so forth.
-  db_query('UPDATE {content_moderation_revision_state} SET state = "none" WHERE nid = %d AND vid<>%d AND state="live"', $nid,$vid);
+  db_query("UPDATE {content_moderation_revision_state} SET state = 'none' WHERE nid = %d AND vid<>%d AND state='live'", $nid,$vid);
 }
 
 /*
@@ -190,7 +190,7 @@ function _content_moderation_get_history($key) {
 function _content_moderation_next_states($curstate, $node_type = 'all', $user = NULL) {
   if($curstate == "")
     $curstate = 'none';
-  $result = db_query('select to_name as state from {content_moderation_transition} where from_name="%s" and (ntype="%s" OR ntype="all")',$curstate, $node_type);
+  $result = db_query("select to_name as state from {content_moderation_transition} where from_name='%s' and (ntype='%s' OR ntype='all')",$curstate, $node_type);
   $states = array();
   while ($state = db_fetch_object($result)) {
     $states[$state->state] = t($state->state);
@@ -282,3 +282,4 @@ function _content_moderation_current_state($vid) {
   // return default
   return 'none';
 }
+

@@ -1,8 +1,14 @@
 <?php
 // $Id$
 
-# Copyright (c) 2010 Impressive.media
-# Author: Eugen Mayer
+/**
+ * @file
+ * Install file for the content moderation module.
+ *
+ * Copyright (c) 2010 Impressive.media
+ * Author: Eugen Mayer
+ *
+ */
 
 /**
  * Implementation of hook_install().
@@ -21,19 +27,20 @@ function content_moderation_install() {
 function content_moderation_schema() {
   $schema['content_moderation_revision_state'] = array(
     'description' => t('Saves the current live vid of a node'),
-    'fields' => array(
-      'vid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-      'nid'          => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-      'state'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+    'fields'  => array(
+      'vid'   => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'nid'   => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'state' => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
     ),
     'primary key' => array('vid'),
   );
 
   $schema['content_moderation_states'] = array(
     'description' => t('Defines all possible states'),
-    'fields' => array(
-      'name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
-      'descr'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+    'fields'    => array(
+      'name'    => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'descr'   => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'weight'  => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'size' => 'small'),
     ),
     'unique keys' => array('name' => array('name'))
   );
@@ -54,9 +61,9 @@ function content_moderation_schema() {
   $schema['content_moderation_transition'] = array(
     'description' => t('Defines the valid transitions for states'),
     'fields' => array(
-      'from_name'          => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
-      'to_name'      => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
-      'ntype'      => array('type' => 'varchar', 'length' => '40', 'not null' => FALSE),
+      'from_name' => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'to_name'   => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE),
+      'ntype'     => array('type' => 'varchar', 'length' => '40', 'not null' => FALSE),
     ),
   );
 
@@ -65,41 +72,39 @@ function content_moderation_schema() {
 
 
 function _content_moderation_insert_values() {
-  $states = array(
-    array(
-      'name' => 'none',
-    ),
-    array(
-      'name' => 'review',
-    ),
-    array(
-      'name' => 'approve',
-    ),
-    array(
-      'name' => 'live',
-    ),
-  );
+  $states[] = array('name' => 'none');
+  $states[] = array('name' => 'review');
+  $states[] = array('name' => 'approve');
+  $states[] = array('name' => 'live');
   foreach($states as $state) {
-      db_query('insert into {content_moderation_states} (`name`) VALUES("%s")',$state);
+    // See http://drupal.org/node/568640 to change this after it's fixed.
+    db_query('INSERT INTO {content_moderation_states} (`name`) VALUES("%s")', $state);
+    //drupal_write_record('content_moderation_states', $state);
   }
 
-  //transitions
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("none","review","all")');
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","approve","all")');
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","live","all")');
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("review","none","all")');
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","review","all")');
-  db_query('insert into {content_moderation_transition} (from_name,to_name,ntype) VALUES("approve","none","all")');
+  // Transitions.
+  $transitions[] = array('none',    'review',   'all');
+  $transitions[] = array('review',  'approve',  'all');
+  $transitions[] = array('approve', 'live',     'all');
+  $transitions[] = array('review',  'none',     'all');
+  $transitions[] = array('approve', 'review',   'all');
+  $transitions[] = array('approve', 'none',     'all');
+  foreach($transitions AS $transition) {
+    // See http://drupal.org/node/568640 to change this after it's fixed.
+    db_query('INSERT INTO {content_moderation_transition} (from_name,to_name,ntype) VALUES("' . $transition[0] . '","' . $transition[0] . '","' . $transition[0] . '")');
+    //drupal_write_record('content_moderation_transition', $transition);
+  }
 }
 
 function content_moderation_update_6001() {
-  db_query('update node INNER JOIN node_revisions nr ON node.vid = nr.vid set node.changed = nr.timestamp');
+  update_sql('UPDATE node INNER JOIN node_revisions nr ON node.vid = nr.vid SET node.changed = nr.timestamp');
   return array();
 }
 
 function content_moderation_update_6003() {
-  db_query("ALTER TABLE `content_moderation_states` ADD `weight` SMALLINT NOT NULL DEFAULT '0'");
-  return array();
+  $ret = array();
+  db_add_field($ret, 'content_moderation_states', 'weight', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'size' => 'small'));
+  return $ret;
 }
 
 /**
@@ -109,4 +114,3 @@ function content_moderation_uninstall() {
   // Remove tables.
   drupal_uninstall_schema('content_moderation');
 }
-

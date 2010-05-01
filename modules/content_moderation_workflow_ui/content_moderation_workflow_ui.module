@@ -163,9 +163,9 @@ function content_moderation_workflow_ui_admin_settings_states_submit($form, &$fo
   $form_values = $form_state['values'];
   foreach ( $form_values['delete_states'] AS $state => $action ) {
     if ( is_string($action) ) {
-      $q = ' DELETE FROM {content_moderation_states} WHERE name = "%s" ';
+      $q = " DELETE FROM {content_moderation_states} WHERE name = '%s' ";
       $r = db_query($q, array($state));
-      $q = ' DELETE FROM {content_moderation_transition} WHERE from_name = "%s" OR from_name = "%s" ';
+      $q = " DELETE FROM {content_moderation_transition} WHERE from_name = '%s' OR from_name = '%s' ";
       $r = db_query($q, array($state, $state));
     }
   }
@@ -186,7 +186,7 @@ function content_moderation_workflow_ui_admin_settings_transitions_submit($form,
   foreach ( $form_values['delete_transitions'] AS $transition => $action ) {
     if ( is_string($action) ) {
       $transinfo = explode('---', $transition);
-      $q = ' DELETE FROM {content_moderation_transition} WHERE from_name = "%s" AND to_name = "%s" ';
+      $q = " DELETE FROM {content_moderation_transition} WHERE from_name = '%s' AND to_name = '%s' ";
       $r = db_query($q, array($transinfo[0], $transinfo[1]));
     }
   }

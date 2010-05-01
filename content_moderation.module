@@ -157,10 +157,9 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
     case 'prepare':
         if (_content_moderation_moderate_node_type($node->type)) {
           $live =  _content_moderation_live_revision($node->nid);
-          //dsm($vid);
           // We only need to change the behavior if the current version is not the latest pending version
           if($live != NULL && $node->vid != $live->vid) {
-              drupal_set_message(t('You are now editing the most recent pending revision (@revision) and not the live version!',array('@revision' => $vid)),'warning', false);
+              drupal_set_message(t('You are now editing the most recent pending revision (@revision) and not the live version!',array('@revision' => $node->vid)),'warning', false);
           }
         }
     break;
@@ -195,7 +194,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
       if($node->live != NULL) {
         // Reset the title.
         if($node->new_title !== false) {
-          db_query('UPDATE {node_revisions} SET title="%s" WHERE vid=%d',$node->new_title, $node->vid);
+          db_query("UPDATE {node_revisions} SET title='%s' WHERE vid=%d",$node->new_title, $node->vid);
         }
 
         // Reset the revision
@@ -246,6 +245,11 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         }
       }
       break;
+    case 'delete':
+      // A node is delete, lets delete the history
+      db_query('DELETE FROM {content_moderation_node_history} WHERE nid=%d',$node->nid);
+      db_query('DELETE FROM {content_moderation_revision_state} WHERE nid=%d',$node->nid);
+    break;
   }
 }
 
@@ -338,6 +342,7 @@ function content_moderation_reset_live_status($nid = NULL) {
  */
 function content_moderation_form_node_type_form_alter(&$form, $form_state) {
   $form[ 'workflow' ][ 'node_options' ][ '#options' ][ 'node_content_moderation' ] = t('Moderate revisions');
+  $form['#validate'][] = '_content_moderation_validate_node_type_form';
 }
 
 /*
@@ -374,8 +379,7 @@ function content_moderation_form_alter(&$form, $form_state, $form_id)  {
     // Skip this also, if the current node has no approved version then, because content_moderation
     // will behave like the normal node edit workflow then (and not restore the vid)
     if($form['nid']['#value'] != NULL && _content_moderation_live_revision($form['nid']['#value']) != NULL){
-      $nid = $form['nid']['#value'];
-      $form['#redirect'] = "node/$nid/latest_revision";
+      $form['buttons']['submit']['#submit'][] = '_content_moderation_submit_node_form';
     }
   }
 }
@@ -480,7 +484,7 @@ function _content_moderation_history($node) {
  */
 function _content_moderation_live_revision($nid) {
   $live_state = _content_moderation_live_state();
-  $vid = db_result(db_query('SELECT vid from {content_moderation_node_history} WHERE nid=%d AND state_name="%s" order by hid DESC limit 1', $nid,$live_state));
+  $vid = db_result(db_query("SELECT vid from {content_moderation_node_history} WHERE nid=%d AND state_name='%s' order by hid DESC limit 1", $nid,$live_state));
   if($vid == false) {
     return NULL;
   }
@@ -722,4 +726,21 @@ function _content_moderation_has_moderated_revisions($nid) {
   }
 
   return $revs;
+}
+
+/*
+ * Helper to ensure, that Create new revision is always checked, when a node type is selected to be moderated
+ */
+function _content_moderation_validate_node_type_form($from,&$form_state) {
+  if($form_state['values']['node_options']['node_content_moderation'] == 'node_content_moderation' && $form_state['values']['node_options']['revision'] === 0) {
+    form_set_error('node_options',t('If you chose to moderate this content type, you must switch "Create new revision" in the workflow tab on'));
+  }
+}
+
+/*
+ * Redirects to the new created revisions
+ */
+function _content_moderation_submit_node_form($form, &$form_state){
+  $nid = $form['nid']['#value'];
+  $form_state['redirect'] = "node/$nid/latest_revision";
 }
