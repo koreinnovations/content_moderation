@@ -74,6 +74,9 @@ function content_moderation_block($op = "list", $delta = 0, $edit = array()){
       $blocks[0]['info'] = t('Content moderation info');
       return $blocks;
     break;
+    case 'cache':
+      return BLOCK_NO_CACHE;
+    break;
     case 'view':
       switch($delta) {
         case 0:
@@ -213,11 +216,11 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
 
       $live = _content_moderation_live_revision($node->nid);
       // If we are showing the node, but there is no live version yet, give a hard notice.
-      if($live == NULL) {
+      if($live == NULL && user_access('view content moderation message no live yet')) {
         // If this node has no live version yet, notice the user that the content is not valid.
         // Valid reasons are, that the node has been just created and not approved or, that all live
         // revisions have been revoked
-        drupal_set_message ( t('The content of this document has not been approved and is therefor not valid yet!'), 'warning' );
+        drupal_set_message ( t('The content of this document has not been approved and therefore is not valid yet!'), 'warning' );
       }
 
       // If we are showing a revision, show the author informations
@@ -255,7 +258,12 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
 
 function content_moderation_yaml_theme_layout($layout, $available) {
   global $theme;
-  $node = _impressive_media_get_cur_node();
+  if(module_exists('impressive_media')) {
+    $node = _impressive_media_get_cur_node();
+  }
+  else {
+    $node = node_load(arg(1));
+  }
 
   if (!_content_moderation_moderate_node_type($node->type)) {
     return;
@@ -291,7 +299,7 @@ function content_moderation_drupalwiki_menu_alter($tree) {
       'href' => "node/$nid/edit",
       'icon' => icon_get_icon_path('edit','20'),
       'has_childred' => 0
-      );
+    );
     $editbtn['below'] = array();
     array_unshift($tree,$editbtn);
   }
@@ -307,34 +315,23 @@ function content_moderation_perm() {
   // making those version "live".
   $states = _content_moderation_states();
   $types = _content_moderation_moderate_node_types();
-
   $rights = array();
   foreach($types as $type) {
     foreach($states as $from_state) {
-        $to_states = _content_moderation_next_states($from_state,$type);
-        // values are translated
-        $to_states = array_keys($to_states);
-        foreach($to_states as $to_state) {
-          $rights[] = "content moderation $type state $from_state to $to_state";
-        }
+      $to_states = _content_moderation_next_states($from_state,$type);
+      // values are translated
+      $to_states = array_keys($to_states);
+      foreach($to_states as $to_state) {
+        $rights[] = "content moderation $type state $from_state to $to_state";
+      }
     }
     $rights[] = "content moderation view $type moderation history";
   }
   $rights[] = 'view content moderation message created by';
   $rights[] = 'view content moderation message pending';
+  $rights[] = 'view content moderation message no live yet';
+  
   return $rights;
-}
-
-/*
- * Call this method in the form_submit or presave methods to let the updated node
- * be the new live version.
- */
-function content_moderation_reset_live_status($nid = NULL) {
-  if ($nid == NULL || !is_numeric($nid)) {
-    return;
-  }
-
-  db_query('DELETE from {content_moderation} WHERE nid = %d', $nid);
 }
 
 /*
@@ -399,7 +396,8 @@ function theme_content_moderation_node_history($history) {
       format_date($e->stamp,'small'),                         // date
       l($user->name,"user/{$user->uid}"),                     // Who changed that state?
       "<span class='$state_class'>".ucfirst(t('!old',array('!old' => $e->old_state_name))).' -> '.ucfirst(t($e->state_name)).'</span>',             // Transition
-      l($e->vid,"node/{$e->nid}/revisions/{$e->vid}/view")   // revision
+      l($e->vid,"node/{$e->nid}/revisions/{$e->vid}/view"),   // revision
+      check_plain($e->comment), // comment
     );
   }
   $title = t('Moderation history');
@@ -410,6 +408,7 @@ function theme_content_moderation_node_history($history) {
                       t('Author'),
                       t('Transition'),
                       t('Revision'),
+                      t('Comment'),
                     )
                 ,$data);
 }
@@ -422,8 +421,8 @@ function content_moderation_views_api() {
 }
 
 /*
- * This is out small helper to ensure, that always the newes vid gets edited.
- * The normal node API would edit the vid which is currently in {node},
+ * This is our small helper to ensure, that always the newes vid gets edited.
+ * The normal node API would edit the vid which is currently in {node} table,
  * But we want to edit the VID which is the most recent one.
  */
 function _content_moderation_node_edit_page($node) {
@@ -572,6 +571,10 @@ function _content_moderation_state_allowed($user,$from_state,$to_state,$node_typ
  * }
  */
 function _content_moderation_access($op,$node) {
+  if(_content_moderation_moderate_node_type($node->type) === false) {
+    return false;
+  }
+
   $modules = module_implements('content_moderation_access');
   if(count($modules) > 0) {
     $grants = module_invoke_all('content_moderation_access',$op,$node);
@@ -663,7 +666,7 @@ function _content_moderation_get_current_viewed_node() {
 }
 
 /*
- * Small helper for trigger and events
+ * Small helper for trigger and rules
  */
 function _content_moderation_node_transition_matrix() {
   static $node_state_matrix = array();
@@ -729,10 +732,10 @@ function _content_moderation_has_moderated_revisions($nid) {
 }
 
 /*
- * Helper to ensure, that Create new revision is always checked, when a node type is selected to be moderated
+ * Helper to ensure, that 'Create new revision is always checked', when a node type is selected to be moderated
  */
 function _content_moderation_validate_node_type_form($from,&$form_state) {
-  if($form_state['values']['node_options']['node_content_moderation'] == 'node_content_moderation' && $form_state['values']['node_options']['revision'] === 0) {
+  if($form_state['values']['node_options']['node_content_moderation'] === 'node_content_moderation' && $form_state['values']['node_options']['revision'] === 0) {
     form_set_error('node_options',t('If you chose to moderate this content type, you must switch "Create new revision" in the workflow tab on'));
   }
 }
@@ -743,4 +746,22 @@ function _content_moderation_validate_node_type_form($from,&$form_state) {
 function _content_moderation_submit_node_form($form, &$form_state){
   $nid = $form['nid']['#value'];
   $form_state['redirect'] = "node/$nid/latest_revision";
+}
+
+function _content_moderation_latest_live_in_history($nid) {
+  $result = _content_moderation_get_history(array('name' => 'nid','value' => $nid), 'live');
+  if(is_array($result) && count($result) > 0) {
+    return $result[0];
+  }
+  // else
+  return false;
+}
+
+function _content_moderation_latest_entry_in_history($vid,$state = 'live' ) {
+  $result = _content_moderation_get_history(array('name' => 'vid','value' => $vid), $state);
+  if(is_array($result) && count($result) > 0) {
+    return $result[0];
+  }
+  // else
+  return false;
 }

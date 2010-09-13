@@ -131,9 +131,15 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
  */
 function _content_moderation_set_live($vid,$nid) {
   $revision = _content_moderation_revision_infos($vid);
-  // Save the vid in the node table.
-  db_query("UPDATE {node} SET vid = %d, status = 1, changed='%s' WHERE nid = %d", $vid, $revision->timestamp, $nid);
-
+  dsm($revision);
+  // Save the vid in the node table and update the title.
+  db_query("UPDATE {node} SET vid = %d, status = 1, changed='%s', title='%s' WHERE nid = %d", $vid, $revision->timestamp, $revision->title, $nid);
+  if(module_exists('pathauto'))  {
+    // recreate node-path_alias
+    $node = node_load($nid, NULL, true);
+    pathauto_node_update_alias($node,'update');
+  }
+  
   // Reset all current states of revisisions of this node, which are live
   // as we can have more then one live revision.
   // We are not resetting the history though, because it should be visible
@@ -168,8 +174,13 @@ function _content_moderation_save_history($node,$curstate,$nextstate,$uid,$comme
 /*
  * Gets the history of a node or a revision, depending on the key.
  */
-function _content_moderation_get_history($key) {
-  $result = db_query('select * from {content_moderation_node_history} where '.$key['name'].'=%d order by stamp DESC' ,$key['value']);
+function _content_moderation_get_history($key, $tostate = NULL) {
+  if($tostate != NULL) {
+	  $result = db_query('select * from {content_moderation_node_history} where '.$key['name'].'=%d AND state_name="%s" order by stamp DESC' ,$key['value'],$tostate);
+  }
+  else {
+    $result = db_query('select * from {content_moderation_node_history} where '.$key['name'].'=%d order by stamp DESC' ,$key['value']);
+  }
   $history = array();
 
   while ($entry = db_fetch_object($result)) {

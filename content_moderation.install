@@ -91,7 +91,7 @@ function _content_moderation_insert_values() {
   $transitions[] = array('approve', 'none',     'all');
   foreach($transitions AS $transition) {
     // See http://drupal.org/node/568640 to change this after it's fixed.
-    db_query('INSERT INTO {content_moderation_transition} (from_name,to_name,ntype) VALUES("' . $transition[0] . '","' . $transition[0] . '","' . $transition[0] . '")');
+    db_query('INSERT INTO {content_moderation_transition} (from_name,to_name,ntype) VALUES("' . $transition[0] . '","' . $transition[1] . '","' . $transition[2] . '")');
     //drupal_write_record('content_moderation_transition', $transition);
   }
 }
@@ -104,6 +104,14 @@ function content_moderation_update_6001() {
 function content_moderation_update_6003() {
   $ret = array();
   db_add_field($ret, 'content_moderation_states', 'weight', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'size' => 'small'));
+  return $ret;
+}
+
+function content_moderation_update_6004() {
+  $ret = array();
+  $sql = "UPDATE {blocks} SET cache = %d WHERE module='content_moderation'";
+  $result = db_query($sql, BLOCK_NO_CACHE);
+  $ret[] = array('success' => $result !== FALSE, 'query' => check_plain($sql));
   return $ret;
 }
 
