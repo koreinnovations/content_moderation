@@ -31,9 +31,10 @@ if($live != NULL) {
   $view_live_link = l($view_icon,$links['live_view'],array('html' => true, 'attributes' => array( 'title' => t('View live revision') ) ));
 
 }
-
-$view_current_link = l($view_icon,"node/{$node->nid}/revisions/{$node->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View this revision.') ) ));
-$current_rev_link = l($node->vid,"node/{$node->nid}/revisions/{$node->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View this revision.') ) ));
+$check_revisions = _content_moderation_get_latest_revisions($node->nid, 2);
+$rev_url = _content_moderation_determine_revision_url($check_revisions, $node->nid, $node->vid, FALSE);
+$view_current_link = l($view_icon, $rev_url,array('html' => true, 'attributes' => array( 'title' => t('View this revision.') ) ));
+$current_rev_link = l($node->vid, $rev_url,array('html' => true, 'attributes' => array( 'title' => t('View this revision.') ) ));
 
 if(module_exists('diff')){
   $compare_live = l($rev_icon,$links['compare_with_live'],array('html' => true, 'attributes' => array( 'title' => t('Compare this revision with the live revision.') ) ));

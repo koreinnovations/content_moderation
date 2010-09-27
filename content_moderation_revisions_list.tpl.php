@@ -27,9 +27,10 @@ foreach($revisions as $rev) {
   $edit_state_link = '';
   $compare_live = '';
   $compare = '';
-
-  $view_link = l($view_icon,"node/{$rev->nid}/revisions/{$rev->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View revision @rev.',array('@rev' => $rev->vid) ))));
-  $revision_link = l($rev->vid,"node/{$rev->nid}/revisions/{$rev->vid}/view",array('html' => true, 'attributes' => array( 'title' => t('View revision @rev.',array('@rev' => $rev->vid) ))));
+  $check_revisions = _content_moderation_get_latest_revisions($rev->nid, 2);
+  $rev_url = _content_moderation_determine_revision_url($check_revisions, $rev->nid, $rev->vid, FALSE);
+  $view_link = l($view_icon, $rev_url,array('html' => true, 'attributes' => array( 'title' => t('View revision @rev.',array('@rev' => $rev->vid) ))));
+  $revision_link = l($rev->vid, $rev_url,array('html' => true, 'attributes' => array( 'title' => t('View revision @rev.',array('@rev' => $rev->vid) ))));
 
   if(_content_moderation_statechange_allowed($rev->vid) !== false) {
     $edit_state_link = l($edit_state_icon,_content_moderation_change_state_link($rev->vid,$rev->nid),array('html' => true, 'attributes' => array( 'title' => t('Change state of revision @rev.',array('@rev' => $rev->vid) ))));

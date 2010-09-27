@@ -56,7 +56,9 @@ function content_moderation_change_state_form(&$form_state,$vid) {
   $form['buttons']['submit']            = array ('#type'=>'submit', '#value'=>t('Save'));
   $form['buttons']['cancel']['#type']   = 'markup';
   $form['buttons']['cancel']['#weight'] = 2000;
-  $form['buttons']['cancel']['#value']  = l(t('Cancel'), "node/$nid/revisions/$vid/view", array( 'attributes' => array( 'class' => 'form-submit form-submit-cancel')));
+  $check_revisions = _content_moderation_get_latest_revisions($node->nid, 2);
+  $rev_url = _content_moderation_determine_revision_url($check_revisions, $node->nid, $node->vid, FALSE);
+  $form['buttons']['cancel']['#value']  = l(t('Cancel'), $rev_url, array( 'attributes' => array( 'class' => 'form-submit form-submit-cancel')));
   return $form;
 }
 
@@ -131,7 +133,6 @@ function _content_moderation_update_revision_state($vid,$nid,$state) {
  */
 function _content_moderation_set_live($vid,$nid) {
   $revision = _content_moderation_revision_infos($vid);
-  dsm($revision);
   // Save the vid in the node table and update the title.
   db_query("UPDATE {node} SET vid = %d, status = 1, changed='%s', title='%s' WHERE nid = %d", $vid, $revision->timestamp, $revision->title, $nid);
   if(module_exists('pathauto'))  {
@@ -168,6 +169,7 @@ function _content_moderation_save_history($node,$curstate,$nextstate,$uid,$comme
   }
   if(module_exists('rules')) {
     rules_invoke_event("{$node->type}_{$curstate}_{$nextstate}", $node);
+    rules_invoke_event("anynode_anystate_{$nextstate}", $node);
   }
 }
 
