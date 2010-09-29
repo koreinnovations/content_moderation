@@ -652,12 +652,12 @@ function _content_moderation_node_transition_matrix() {
 
   foreach($types as $type) {
     foreach($states as $from_state) {
-        $to_states = _content_moderation_next_states($from_state,$type);
+      $to_states = _content_moderation_next_states($from_state,$type);
         // Values are translated.
-        $to_states = array_keys($to_states);
-        }
+      $to_states = array_keys($to_states);
     }
   }
+  
   
   foreach($to_states as $to_state) {
     $node_state_matrix["anynode_anystate_{$to_state}"]= t("State of any node type changed to '@to_state'", array('@to_state' => $to_state));
