@@ -646,13 +646,15 @@ function _content_moderation_node_transition_matrix() {
   }
   $states = _content_moderation_states();
   $types = _content_moderation_moderate_node_types();
+  if(count($types) == 0) {
+    return array();
+  );
+
   foreach($types as $type) {
     foreach($states as $from_state) {
         $to_states = _content_moderation_next_states($from_state,$type);
         // Values are translated.
         $to_states = array_keys($to_states);
-        foreach($to_states as $to_state) {
-          $node_state_matrix["{$type}_{$from_state}_{$to_state}"]= t("State of node type @type changed from '@from_state' to '@to_state'", array('@type' => $type, '@from_state' => $from_state, '@to_state' => $to_state));
         }
     }
   }
@@ -748,10 +750,10 @@ function _content_moderation_determine_revision_url($revisions, $nid, $vid, $vie
     $rev_url = "node/{$nid}";
   }
   else {
-    $rev_url = "node/{$nid}/revisions/{$vid}/";
-    if ($view == TRUE) {
+    $rev_url = "node/{$nid}/revisions/{$vid}/view";
+   /*if ($view == TRUE) {
         $rev_url .= "view";
-    }
+    }*/
   }
   return $rev_url;
 }

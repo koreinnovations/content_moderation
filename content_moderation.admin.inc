@@ -16,7 +16,7 @@ function content_moderation_admin_settings() {
   $form['content_moderation_moderate_latest_only'] = array(
     '#title' => t('Edit stop on revision-moderation'),
     '#type' => 'checkbox',
-    '#description' => t('When you enable this, you will only be able to<br> - Change the state of the latest revision of the dokument<br> - Edit the document only if the latest state has the status none<br>Please refer to the documentation for further details<br><strong>Be aware enabling this feature if you have already moderated revisions which are not the latest!</strong><br> <strong>Only disable this feature if you exactly know what you are going to expect!</strong>'),
+    '#description' => t('When you enable this, you will only be able to<br> - Change the state of the latest revision of the document<br> - Edit the document only if the latest state has the status none<br>Please refer to the documentation for further details<br><strong>Be aware enabling this feature if you have already moderated revisions which are not the latest!</strong><br> <strong>Only disable this feature if you exactly know what you are going to expect!</strong>'),
     '#default_value' => variable_get('content_moderation_moderate_latest_only', 1),
   );
   $form['content_moderation_force_publish'] = array(
