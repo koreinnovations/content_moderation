@@ -1,5 +1,4 @@
 <?
-// $Id$
 
 /*
  * Implements hook_views_data().
