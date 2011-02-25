@@ -1,4 +1,3 @@
-; $Id$
 project = "content_moderation"
 core = "6.x"
 name = Content Moderation
