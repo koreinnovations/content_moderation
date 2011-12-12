@@ -163,7 +163,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
           $live =  _content_moderation_live_revision($node->nid);
           // We only need to change the behavior if the current version is not the latest pending version
           if($live != NULL && $node->vid != $live->vid) {
-              drupal_set_message(t('You are now editing the most recent pending revision (@revision) and not the live version!',array('@revision' => $node->vid)),'warning', false);
+              drupal_set_message(t('You are now editing the most recent pending revision (@revision) and not the live version!',array('@revision' => $node->vid)),'warning',FALSE);
           }
         }
     break;
@@ -205,7 +205,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         $live_version = _content_moderation_revision_infos($node->live->vid);
         db_query("UPDATE {node} SET vid = %d, changed='%s', title='%s' WHERE nid = %d", $live_version->vid, $live_version->timestamp, $live_version->title, $node->nid);
 
-        drupal_set_message(t('Your content has been saved as a pending version'));
+        //drupal_set_message(t('Your content has been saved as a pending version'), 'status', FALSE);
      }
     break;
     case 'view':
@@ -221,7 +221,7 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         // If this node has no live version yet, notice the user that the content is not valid.
         // Valid reasons are, that the node has been just created and not approved or, that all live
         // revisions have been revoked
-        drupal_set_message ( t('The content of this document has not been approved and therefore is not valid yet!'), 'warning' );
+        drupal_set_message ( t('The content of this document has not been approved and therefore is not valid yet!'), 'warning', FALSE );
       }
 
       // If we are showing a revision, show the author informations
@@ -243,9 +243,9 @@ function content_moderation_nodeapi(&$node, $op, $a3, $a4) {
         $count = count($pending_revisions);
 
         if($count == 1)
-          drupal_set_message(t('This document has 1 pending revision',array('@count' => $count)));
+          drupal_set_message(t('This document has 1 pending revision',array('@count' => $count)), 'status', FALSE);
         else if($count > 1) {
-          drupal_set_message(t('This document has @count pending revisions',array('@count' => $count)));
+          drupal_set_message(t('This document has @count pending revisions',array('@count' => $count)), 'status', FALSE);
         }
       }
       break;
@@ -280,20 +280,19 @@ function content_moderation_drupalwiki_menu_alter($tree) {
   if($tree['meta']['name'] != 'drupalwiki_menu_toolbar') {
     return $tree;
   }
-
   // Dont show the toolbar if we are editing
   if( !(arg(0) == 'node' && arg(2) == 'revisions' && is_numeric(arg(3))) ) {
     return $tree;
   }
   $nid = arg(1);
   $vid = arg(3);
+  $node = _impressive_media_get_cur_node();
   // We fetch the latest 2, as that way we can verify 2 things
   $latest = _content_moderation_get_latest_revisions($nid,1);
-  if(
-      (is_array($latest) && count($latest) > 0 && $latest[0]->vid == $vid) ||
-      _content_moderation_is_not_approved_live($vid)
-  )
-  {
+  if( (is_array($latest) && count($latest) > 0 && $latest[0]->vid == $vid) || _content_moderation_is_not_approved_live($vid) ) {
+    if(!impressive_media_icombined_access_accesscheck('update', $node)) {
+      return $tree;
+    }
     $editbtn['link'] = array(
       'title' => t('Edit'),
       'path' => 'node/%/edit',
@@ -389,24 +388,31 @@ function content_moderation_views_api() {
   return array('api' => 2.0);
 }
 
-/*
- * This is our small helper to ensure, that always the newes vid gets edited.
- * The normal node API would edit the vid which is currently in {node} table,
- * But we want to edit the VID which is the most recent one.
- */
-function _content_moderation_node_edit_page($node) {
+function _content_moderation_editing_allowed($node) {
   if(variable_get('content_moderation_moderate_latest_only', 1) === 1) {
     $moderated_revs = _content_moderation_has_moderated_revisions($node->nid);
 
     // Do not allow state changing of revisions, which are not the latest
     // TODO: Maybe we need a exception for the live state to unapprove it later?
     if(count($moderated_revs) > 0) {
-      $none_state = _content_moderation_none_state();
-      drupal_set_message(t('You cannot edit the document, as the latest revision is under moderation. Set the revision back to the state "!state" to be able to edit.', array('!state' => $none_state)), 'warning');
-      drupal_goto("node/{$node->nid}");
-      return false;
+      $none_state = _content_moderation_none_state();      
+      return FALSE;
     }
   }
+  return TRUE;
+}
+
+/*
+ * This is our small helper to ensure, that always the newes vid gets edited.
+ * The normal node API would edit the vid which is currently in {node} table,
+ * But we want to edit the VID which is the most recent one.
+ */
+function _content_moderation_node_edit_page($node) {
+  if(!_content_moderation_editing_allowed($node)) {
+    drupal_set_message(t('You cannot edit the document, as the latest revision is under moderation. Set the revision back to the state "!state" to be able to edit.', array('!state' => $none_state)), 'warning');
+    drupal_goto('node/'.$node->nid);
+  }
+
   if (_content_moderation_moderate_node_type($node->type)) {
     $vid =  _content_moderation_latest_revision($node->nid);
     // Drupal uses the vid of the node table, not the real latest revision out of node_revisions
@@ -654,6 +660,11 @@ function _content_moderation_node_transition_matrix() {
       $to_states = _content_moderation_next_states($from_state,$type);
         // Values are translated.
       $to_states = array_keys($to_states);
+      foreach($to_states as $to_state) {
+        $node_state_matrix["{$type}_{$from_state}_{$to_state}"] =
+          t("State of node type @type changed from '@from_state' to '@to_state'",
+	    array('@type' => $type, '@from_state' => $from_state, '@to_state' => $to_state));
+      }
     }
   }
   
@@ -661,6 +672,9 @@ function _content_moderation_node_transition_matrix() {
   foreach($to_states as $to_state) {
     $node_state_matrix["anynode_anystate_{$to_state}"]= t("State of any node type changed to '@to_state'", array('@to_state' => $to_state));
   }
+
+  $node_state_matrix["anynode_anystate_anystate"]= t("State of any node type changed to any other state");
+
   return $node_state_matrix;
 }
 
@@ -782,4 +796,71 @@ function template_preprocess_content_moderation_node_history(&$variables) {
      );
    }
   $variables['rows'] = $rows;
+}
+
+function content_moderation_action_info() {
+  $info = array();
+
+  $info['content_moderation_transition_action'] = array(
+      'type' => 'node',
+      'description' => t('Perform a transition between content moderation states'),
+      'configurable' => TRUE,
+      'hooks' => array(
+        'nodeapi' => array('presave', 'update', 'insert'),
+      ),
+  );
+
+  return $info;
+}
+
+function content_moderation_transition_action_form($context) {
+  static $transitions = array();
+
+  // caching
+  if(count($transitions) == 0) {
+    $states = _content_moderation_states();
+
+    foreach($states as $from_state) {
+      $to_states = _content_moderation_next_states($from_state);
+        // Values are translated.
+      $to_states = array_keys($to_states);
+      foreach($to_states as $to_state) {
+        $transitions["{$from_state}|~|{$to_state}"] =
+          t("@from_state to @to_state", array('@from_state' => $from_state, '@to_state' => $to_state));
+      }
+    }
+  }
+
+  $form['transition'] = array(
+      '#type' => 'select',
+      '#title' => t('Transition to Perform'),
+      '#description' => t('Choose the state transition to execute on the new node revision'),
+      '#options' => $transitions,
+      '#default_value' => isset($context['transition']) ? $context['transition'] : NULL,
+      '#required' => TRUE,
+  );
+
+  return $form;
+}
+
+function content_moderation_transition_action_submit($form, $form_state) {
+  return array(
+      'transition' => $form_state['values']['transition'],
+  );
+}
+
+function content_moderation_transition_action($node, $context) {
+  list($oldstate, $newstate) = explode('|~|', $context['transition']);
+
+  watchdog('message', 'Update revision state action: nid !nid, vid !vid, newstate !newstate', array('!nid' => $node->nid, '!vid' => $node->vid, '!newstate' => $newstate));
+
+  // Change the revision state.
+  _content_moderation_update_revision_state($node->vid, $node->nid, $newstate);
+
+  if($newstate == 'live') {
+    _content_moderation_set_live($node->vid,$node->nid);
+  }
+
+  // History entry.
+  _content_moderation_save_history($node,$oldstate,$newstate,$user->uid,$comment);
 }

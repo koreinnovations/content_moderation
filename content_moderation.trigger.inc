@@ -19,7 +19,7 @@ function content_moderation_hook_info() {
 /*
  * Implementation of hook_trigger_name().
  */
-function content_moderation_content_moderation($op,$user) {
+function content_moderation_content_moderation($op,$node) {
   if (!module_exists("trigger")) {
     return;
   }
@@ -33,7 +33,7 @@ function content_moderation_content_moderation($op,$user) {
   if (count($aids) == 0) {
     return;
   }
-  $context = array('hook' => 'content_moderation', 'op' => $op, 'user' => $user);
+  $context = array('hook' => 'content_moderation', 'op' => $op, 'node' => $node);
 
-  actions_do(array_keys($aids), $user, $context);
+  actions_do(array_keys($aids), $node, $context);
 }
